@@ -33,6 +33,7 @@ const ProductPage = () => {
         {
             title: 'STT',
             key: 'stt',
+            align: 'center',
             render: (_: any, __: any, index: number) => index + 1,
         },
         { title: 'Tên sản phẩm', dataIndex: 'name', key: 'name' },
@@ -42,10 +43,11 @@ const ProductPage = () => {
             key: 'price',
             render: (value: number) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value)
         },
-        { title: 'Số lượng', dataIndex: 'quantity', key: 'quantity' },
+        { title: 'Số lượng', align: 'center', dataIndex: 'quantity', key: 'quantity' },
         {
             title: 'Thao tác',
             key: 'action',
+            align: 'center',
             render: (_: any, record: any) => (
                 <Popconfirm
                     title="Bạn có chắc chắn muốn xóa sản phẩm này không?"
