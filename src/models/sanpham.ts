@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { querySanphamList, addSanpham, deleteSanpham } from '@/services/Sanpham/sanpham';
+import { querySanphamList, addSanpham, deleteSanpham, updateSanpham } from '@/services/Sanpham/sanpham';
 import { message } from 'antd';
 
 export default () => {
@@ -7,7 +7,7 @@ export default () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [total, setTotal] = useState<number>(0);
 
-    const fetchProducts = useCallback(async (params = { current: 1, pageSize: 10 }) => {
+    const fetchProducts = useCallback(async (params = {}) => {
         setLoading(true);
         try {
             const res = await querySanphamList(params);
@@ -37,6 +37,24 @@ export default () => {
         }
     }, []);
 
+    const editProduct = useCallback(async (data: any) => {
+        setLoading(true);
+        try {
+            const res = await updateSanpham(data);
+            if (res?.data?.success) {
+                message.success('Cập nhật sản phẩm thành công');
+                return true;
+            }
+            message.error('Cập nhật sản phẩm thất bại');
+            return false;
+        } catch (error) {
+            message.error('Cập nhật sản phẩm thất bại');
+            return false;
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
     const removeProduct = useCallback(async (id: number) => {
         setLoading(true);
         try {
@@ -60,6 +78,7 @@ export default () => {
         total,
         fetchProducts,
         addProduct,
+        editProduct,
         removeProduct
     };
 };
