@@ -4,7 +4,7 @@ import { useModel } from 'umi';
 import { SubjectType } from '@/models/studyTracker';
 
 const SubjectManager: React.FC = () => {
-    const { subjects, deleteSubject } = useModel('studyTracker');
+    const { subjects, addSubject, editSubject, deleteSubject } = useModel('studyTracker');
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [editingSubject, setEditingSubject] = useState<SubjectType | null>(null);
     const [form] = Form.useForm();
@@ -12,6 +12,7 @@ const SubjectManager: React.FC = () => {
     const handleOpenModal = (subject?: SubjectType) => {
         if (subject) {
             setEditingSubject(subject);
+            form.setFieldsValue(subject);
         } else {
             setEditingSubject(null);
             form.resetFields();
@@ -22,6 +23,18 @@ const SubjectManager: React.FC = () => {
     const handleCancel = () => {
         setIsModalVisible(false);
         form.resetFields();
+    };
+
+    const handleOk = () => {
+        form.validateFields().then((values) => {
+            if (editingSubject) {
+                editSubject(editingSubject.id, values.name);
+            } else {
+                addSubject(values.name);
+            }
+            setIsModalVisible(false);
+            form.resetFields();
+        });
     };
 
     const columns = [
@@ -61,6 +74,7 @@ const SubjectManager: React.FC = () => {
             <Modal
                 title={editingSubject ? 'Sửa môn học' : 'Thêm môn học'}
                 open={isModalVisible}
+                onOk={handleOk}
                 onCancel={handleCancel}
             >
                 <Form form={form} layout="vertical">
