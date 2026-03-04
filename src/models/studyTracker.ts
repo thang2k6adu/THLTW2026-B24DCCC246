@@ -77,12 +77,31 @@ export default () => {
         setGoals(goals.filter((g) => g.subjectId !== id));
         message.success('đã xóa môn học thành coong');
     };
+
+    const addSchedule = (data: Omit<ScheduleType, 'id'>) => {
+        const newSch: ScheduleType = { id: Date.now().toString(), ...data };
+        setSchedules([...schedules, newSch]);
+        message.success('đã thêm lịch học');
+    };
+
+    const editSchedule = (id: string, data: Partial<ScheduleType>) => {
+        setSchedules(schedules.map((sch) => (sch.id === id ? { ...sch, ...data } : sch)));
+        message.success('đã cập nhật lịch học');
+    };
+
+    const deleteSchedule = (id: string) => {
+        setSchedules(schedules.filter((sch) => sch.id !== id));
+        message.success('đã xóa lịch học thành công');
+    };
     return {
         subjects,
         addSubject,
         editSubject,
         deleteSubject,
         schedules,
+        addSchedule,
+        editSchedule,
+        deleteSchedule,
         goals
     };
 };
