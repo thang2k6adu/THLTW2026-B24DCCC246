@@ -93,6 +93,33 @@ export default () => {
         setSchedules(schedules.filter((sch) => sch.id !== id));
         message.success('đã xóa lịch học thành công');
     };
+
+    const setGoal = (data: Omit<GoalType, 'id'>) => {
+        const existingIndex = goals.findIndex((g) => g.subjectId === data.subjectId && g.month === data.month);
+
+        if (existingIndex > -1) {
+            const newGoals = [...goals];
+            newGoals[existingIndex] = { ...newGoals[existingIndex], ...data };
+            setGoals(newGoals);
+            message.success('đã cập nhật mục tiêu');
+        } else {
+            setGoals([...goals, { id: Date.now().toString(), ...data }]);
+            message.success('đã thiết lập mục tiêu');
+        }
+    };
+
+    const deleteGoal = (id: string) => {
+        setGoals(goals.filter((g) => g.id !== id));
+        message.success('đã xóa mục tiêu thành công');
+    };
+
+    const getProgressByMonthAndSubject = (month: string, subjectId: string) => {
+        const relevantSchedules = schedules.filter((sch) => {
+            const schMonth = sch.time.substring(0, 7);
+            return schMonth === month && (subjectId === 'TOTAL' || sch.subjectId === subjectId);
+        });
+        return relevantSchedules.reduce((acc, sch) => acc + sch.durationHours, 0);
+    };
     return {
         subjects,
         addSubject,
@@ -102,6 +129,9 @@ export default () => {
         addSchedule,
         editSchedule,
         deleteSchedule,
-        goals
+        goals,
+        setGoal,
+        deleteGoal,
+        getProgressByMonthAndSubject
     };
 };
