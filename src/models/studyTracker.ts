@@ -50,15 +50,12 @@ export default () => {
     useEffect(() => {
         localStorage.setItem('APP_SUBJECTS', JSON.stringify(subjects));
     }, [subjects]);
-
     useEffect(() => {
         localStorage.setItem('APP_SCHEDULES', JSON.stringify(schedules));
     }, [schedules]);
-
     useEffect(() => {
         localStorage.setItem('APP_GOALS', JSON.stringify(goals));
     }, [goals]);
-
 
     const addSubject = (name: string) => {
         const newSub: SubjectType = { id: Date.now().toString(), name };

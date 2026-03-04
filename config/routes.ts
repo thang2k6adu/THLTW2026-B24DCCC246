@@ -48,6 +48,12 @@
 		icon: 'PlayCircleOutlined',
 		component: './Bai1',
 	},
+	{
+		path: '/bai-2',
+		name: 'Bài 2 (Học tập)',
+		icon: 'BookOutlined',
+		component: './Bai2',
+	},
 
 	// DANH MUC HE THONG
 	// {
