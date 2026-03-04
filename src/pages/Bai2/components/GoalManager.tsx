@@ -70,8 +70,10 @@ const GoalManager: React.FC = () => {
             key: 'status',
             render: (_: any, record: GoalType) => {
                 const achieved = getProgressByMonthAndSubject(record.month, record.subjectId);
-                const percent = Math.min(Math.round((achieved / record.targetHours) * 100), 100);
-                let status: 'normal' | 'success' | 'exception' = 'normal';
+                const percent =
+                    record.targetHours > 0
+                        ? Math.min(Math.round((achieved / record.targetHours) * 100), 100)
+                        : 0; let status: 'normal' | 'success' | 'exception' = 'normal';
                 if (percent === 100) status = 'success';
                 if (moment().format('YYYY-MM') > record.month && percent < 100) status = 'exception';
 
