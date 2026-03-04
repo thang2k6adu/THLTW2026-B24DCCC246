@@ -8,7 +8,7 @@ const { Option } = Select;
 const { TextArea } = Input;
 
 const ScheduleManager: React.FC = () => {
-    const { schedules, addSchedule, editSchedule, deleteSchedule, subjects } = useModel('studyTracker');
+    const { schedules, deleteSchedule, subjects } = useModel('studyTracker');
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [editingSchedule, setEditingSchedule] = useState<ScheduleType | null>(null);
     const [form] = Form.useForm();
@@ -16,13 +16,8 @@ const ScheduleManager: React.FC = () => {
     const handleOpenModal = (schedule?: ScheduleType) => {
         if (schedule) {
             setEditingSchedule(schedule);
-            form.setFieldsValue({
-                ...schedule,
-                time: moment(schedule.time),
-            });
         } else {
             setEditingSchedule(null);
-            form.resetFields();
         }
         setIsModalVisible(true);
     };
@@ -30,23 +25,6 @@ const ScheduleManager: React.FC = () => {
     const handleCancel = () => {
         setIsModalVisible(false);
         form.resetFields();
-    };
-
-    const handleOk = () => {
-        form.validateFields().then((values) => {
-            const dataToSave = {
-                ...values,
-                time: values.time.toISOString(),
-            };
-
-            if (editingSchedule) {
-                editSchedule(editingSchedule.id, dataToSave);
-            } else {
-                addSchedule(dataToSave);
-            }
-            setIsModalVisible(false);
-            form.resetFields();
-        });
     };
 
     const columns = [
@@ -103,7 +81,6 @@ const ScheduleManager: React.FC = () => {
             <Modal
                 title={editingSchedule ? 'edit schedule' : 'add schedule'}
                 open={isModalVisible}
-                onOk={handleOk}
                 onCancel={handleCancel}
             >
                 <Form form={form} layout="vertical">
