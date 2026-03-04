@@ -73,7 +73,7 @@ const SubjectManager: React.FC = () => {
 
             <Modal
                 title={editingSubject ? 'Sửa môn học' : 'Thêm môn học'}
-                open={isModalVisible}
+                visible={isModalVisible}
                 onOk={handleOk}
                 onCancel={handleCancel}
             >
