@@ -59,8 +59,29 @@ export default () => {
         localStorage.setItem('APP_GOALS', JSON.stringify(goals));
     }, [goals]);
 
+
+    const addSubject = (name: string) => {
+        const newSub: SubjectType = { id: Date.now().toString(), name };
+        setSubjects([...subjects, newSub]);
+        message.success('đã thêm môn học');
+    };
+
+    const editSubject = (id: string, name: string) => {
+        setSubjects(subjects.map((sub) => (sub.id === id ? { ...sub, name } : sub)));
+        message.success('đã cập nhật môn học');
+    };
+
+    const deleteSubject = (id: string) => {
+        setSubjects(subjects.filter((sub) => sub.id !== id));
+        setSchedules(schedules.filter((sch) => sch.subjectId !== id));
+        setGoals(goals.filter((g) => g.subjectId !== id));
+        message.success('đã xóa môn học thành coong');
+    };
     return {
         subjects,
+        addSubject,
+        editSubject,
+        deleteSubject,
         schedules,
         goals
     };
