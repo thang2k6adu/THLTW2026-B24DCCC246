@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Table, Button, Modal, Form, Space, Popconfirm, Select, InputNumber } from 'antd';
+import { Table, Button, Modal, Form, Space, Popconfirm, Select, InputNumber, Progress } from 'antd';
 import { useModel } from 'umi';
 import { GoalType } from '@/models/studyTracker';
 import moment from 'moment';
@@ -7,7 +7,7 @@ import moment from 'moment';
 const { Option } = Select;
 
 const GoalManager: React.FC = () => {
-    const { goals, setGoal, deleteGoal, subjects } = useModel('studyTracker');
+    const { goals, setGoal, deleteGoal, subjects, getProgressByMonthAndSubject } = useModel('studyTracker');
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [editingGoal, setEditingGoal] = useState<GoalType | null>(null);
     const [form] = Form.useForm();
@@ -58,6 +58,27 @@ const GoalManager: React.FC = () => {
             key: 'targetHours',
         },
         {
+            title: 'tiến độ thực tế(hours)',
+            key: 'progressHours',
+            render: (_: any, record: GoalType) => {
+                const achieved = getProgressByMonthAndSubject(record.month, record.subjectId);
+                return achieved;
+            },
+        },
+        {
+            title: 'trạng thái',
+            key: 'status',
+            render: (_: any, record: GoalType) => {
+                const achieved = getProgressByMonthAndSubject(record.month, record.subjectId);
+                const percent = Math.min(Math.round((achieved / record.targetHours) * 100), 100);
+                let status: 'normal' | 'success' | 'exception' = 'normal';
+                if (percent === 100) status = 'success';
+                if (moment().format('YYYY-MM') > record.month && percent < 100) status = 'exception';
+
+                return <Progress percent={percent} status={status} size="small" />;
+            },
+        },
+        {
             title: 'hành động',
             key: 'action',
             render: (_: any, record: GoalType) => (
@@ -70,6 +91,15 @@ const GoalManager: React.FC = () => {
             ),
         },
     ];
+
+    // helper picker date
+    const generateMonths = () => {
+        const list = [];
+        for (let i = -6; i <= 6; i++) {
+            list.push(moment().add(i, 'months').format('YYYY-MM'));
+        }
+        return list;
+    };
 
     return (
         <div>
@@ -87,20 +117,36 @@ const GoalManager: React.FC = () => {
                 onCancel={handleCancel}
             >
                 <Form form={form} layout="vertical">
-                    <Form.Item name="month" label="month" rules={[{ required: true, message: 'hãy chọn tháng' }]}>
-                        <InputNumber style={{ width: '100%' }} />
+                    <Form.Item
+                        name="month"
+                        label="month"
+                        rules={[{ required: true, message: 'hãy chọn tháng' }]}
+                    >
+                        <Select placeholder="select month">
+                            {generateMonths().map((m) => (
+                                <Option key={m} value={m}>{m}</Option>
+                            ))}
+                        </Select>
                     </Form.Item>
 
-                    <Form.Item name="subjectId" label="Môn học áp dụng" rules={[{ required: true, message: 'hãy chọn môn học!' }]}>
-                        <Select>
-                            <Option key="TOTAL" value="TOTAL">all subjects</Option>
+                    <Form.Item
+                        name="subjectId"
+                        label="Môn học áp dụng"
+                        rules={[{ required: true, message: 'hãy chọn môn học!' }]}
+                    >
+                        <Select placeholder="select subject or total time">
+                            <Option key="TOTAL" value="TOTAL"><strong style={{ color: '#1890ff' }}>all subjects</strong></Option>
                             {subjects.map((sub) => (
                                 <Option key={sub.id} value={sub.id}>{sub.name}</Option>
                             ))}
                         </Select>
                     </Form.Item>
 
-                    <Form.Item name="targetHours" label="mục tiêu (giờ)" rules={[{ required: true, message: 'hãy nhập mục tiêu' }]}>
+                    <Form.Item
+                        name="targetHours"
+                        label="mục tiêu (giờ)"
+                        rules={[{ required: true, message: 'hãy nhập mục tiêu' }]}
+                    >
                         <InputNumber min={1} style={{ width: '100%' }} />
                     </Form.Item>
                 </Form>
