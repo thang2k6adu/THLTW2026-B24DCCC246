@@ -16,7 +16,7 @@ const Bai1Page: React.FC = () => {
     const [form] = Form.useForm();
 
 
-    // khởi tạo data cần thiết cho gaem
+    //khởi tạo data cần thiết cho gaem
     const initGame = () => {
         setTargetNumber(Math.floor(Math.random() * 100) + 1);
         setAttempts(10);
@@ -50,7 +50,7 @@ const Bai1Page: React.FC = () => {
             newResult = 'Bạn đoán quá cao!';
             setMessage({ type: 'warning', text: newResult });
         }
-        const newAttempts = attempts + 1;
+        const newAttempts = attempts - 1;
         setAttempts(newAttempts);
 
         setHistory([{ guess, result: newResult }, ...history]);
@@ -71,7 +71,7 @@ const Bai1Page: React.FC = () => {
                         name="guess"
                         rules={[
                             { required: true, message: 'Vui lòng nhập số!' },
-                            { type: 'number', min: 1, max: 100, message: 'Số từ 1 đến 100!' }
+                            { type: 'number', min: 1, max: 100, message: 'số chir từ 1 đến 100!' }
                         ]}
                     >
                         <InputNumber
