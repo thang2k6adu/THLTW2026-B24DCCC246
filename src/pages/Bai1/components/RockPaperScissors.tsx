@@ -1,10 +1,18 @@
-import React, { useState } from 'react';
-import { Card, Button, Space, Typography, Row, Col } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Card, Button, Space, Typography, Row, Col, Table, Tag } from 'antd';
 
 const { Title, Text } = Typography;
 
 type Choice = 'Kéo' | 'Búa' | 'Bao' | null;
 type Result = 'Thắng' | 'Thua' | 'Hòa' | null;
+
+interface MatchHistory {
+  key: number;
+  time: string;
+  player: Choice;
+  computer: Choice;
+  result: Result;
+}
 
 const CHOICES: Choice[] = ['Kéo', 'Búa', 'Bao'];
 const WIN_CONDITIONS: Record<string, string> = {
@@ -17,6 +25,24 @@ const RockPaperScissors = () => {
   const [playerChoice, setPlayerChoice] = useState<Choice>(null);
   const [computerChoice, setComputerChoice] = useState<Choice>(null);
   const [result, setResult] = useState<Result>(null);
+  const [history, setHistory] = useState<MatchHistory[]>([]);
+
+  // Load history from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('rps_history');
+    if (saved) {
+      try {
+        setHistory(JSON.parse(saved));
+      } catch (e) {
+        console.error('Failed to parse history');
+      }
+    }
+  }, []);
+
+  // Save to localStorage when history changes
+  useEffect(() => {
+    localStorage.setItem('rps_history', JSON.stringify(history));
+  }, [history]);
 
   const getIcon = (choice: Choice) => {
     switch(choice) {
@@ -37,19 +63,47 @@ const RockPaperScissors = () => {
     setComputerChoice(cChoice);
     
     // Determine winner
-    if (pChoice === cChoice) {
-      setResult('Hòa');
-    } else if (WIN_CONDITIONS[pChoice] === cChoice) {
-      setResult('Thắng');
-    } else {
-      setResult('Thua');
+    let currentResult: Result = 'Hòa';
+    if (WIN_CONDITIONS[pChoice] === cChoice) {
+      currentResult = 'Thắng';
+    } else if (pChoice !== cChoice) {
+      currentResult = 'Thua';
     }
+    
+    setResult(currentResult);
+
+    // Add to history
+    const newMatch: MatchHistory = {
+      key: Date.now(),
+      time: new Date().toLocaleTimeString(),
+      player: pChoice,
+      computer: cChoice,
+      result: currentResult
+    };
+    
+    setHistory(prev => [newMatch, ...prev]);
   };
 
-  const getResultColor = () => {
-    if (result === 'Thắng') return 'success';
-    if (result === 'Thua') return 'danger';
+  const getResultColor = (res: Result) => {
+    if (res === 'Thắng') return 'success';
+    if (res === 'Thua') return 'error';
     return 'warning'; // Hòa
+  };
+
+  const columns = [
+    { title: 'Thời gian', dataIndex: 'time', key: 'time' },
+    { title: 'Người chơi', dataIndex: 'player', key: 'player', render: (val: Choice) => `${val} ${getIcon(val)}` },
+    { title: 'Máy tính', dataIndex: 'computer', key: 'computer', render: (val: Choice) => `${val} ${getIcon(val)}` },
+    { 
+      title: 'Kết quả', 
+      dataIndex: 'result', 
+      key: 'result',
+      render: (val: Result) => <Tag color={getResultColor(val)}>{val}</Tag>
+    },
+  ];
+
+  const clearHistory = () => {
+    setHistory([]);
   };
 
   return (
@@ -83,10 +137,23 @@ const RockPaperScissors = () => {
       
       <div style={{ textAlign: 'center', marginTop: 32, height: 60 }}>
         {result ? (
-          <Title level={3} type={getResultColor()}>Kết quả: Bạn {result}!</Title>
+          <Title level={3} type={getResultColor(result) === 'success' ? 'success' : getResultColor(result) === 'error' ? 'danger' : 'warning'}>Kết quả: Bạn {result}!</Title>
         ) : (
           <Title level={3} type="secondary">Vui lòng chọn Kéo, Búa, hoặc Bao</Title>
         )}
+      </div>
+
+      <div style={{ marginTop: 48 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+          <Title level={4}>Lịch sử đấu</Title>
+          <Button danger onClick={clearHistory} disabled={history.length === 0}>Xóa lịch sử</Button>
+        </div>
+        <Table 
+          dataSource={history} 
+          columns={columns} 
+          pagination={{ pageSize: 5 }}
+          size="small"
+        />
       </div>
     </Card>
   );
