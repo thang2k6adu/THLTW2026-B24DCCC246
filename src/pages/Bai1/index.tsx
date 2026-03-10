@@ -1,11 +1,9 @@
 import React from 'react';
-import { Card } from 'antd';
+import RockPaperScissors from './components/RockPaperScissors';
 
 const Bai1Page = () => {
   return (
-    <Card title="Bài 1: Trò chơi Oẳn Tù Tì">
-      <div>Đang khởi tạo ứng dụng...</div>
-    </Card>
+    <RockPaperScissors />
   );
 };
 
