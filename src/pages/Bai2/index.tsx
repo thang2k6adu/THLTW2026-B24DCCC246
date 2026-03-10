@@ -1,11 +1,12 @@
 import React from 'react';
-import { Card } from 'antd';
+import { Space } from 'antd';
+import KnowledgeBlockManager from './components/KnowledgeBlockManager';
 
 const Bai2Page = () => {
   return (
-    <Card title="Bài 2: Ngân hàng câu hỏi">
-      <div>Đang khởi tạo ứng dụng...</div>
-    </Card>
+    <Space direction="vertical" style={{ width: '100%', padding: 24 }} size="large">
+      <KnowledgeBlockManager />
+    </Space>
   );
 };
 
