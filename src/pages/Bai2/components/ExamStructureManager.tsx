@@ -1,21 +1,85 @@
 import React, { useState } from 'react';
-import { Card, Form, Select, InputNumber, Button, Space, Row, Col, Typography, message } from 'antd';
+import { Card, Form, Select, InputNumber, Button, Space, Row, Col, Typography, message, Table, Tag } from 'antd';
 import { useModel } from 'umi';
 
 const { Option } = Select;
 const { Title, Text } = Typography;
 
 const ExamStructureManager = () => {
-  const { subjects, knowledgeBlocks } = useModel('exam');
+  const { subjects, knowledgeBlocks, questions } = useModel('exam');
   const [form] = Form.useForm();
   
   // Dynamic generated structure representation (temporary state before submit)
   const [structure, setStructure] = useState<any>(null);
+  
+  // Generated Exam
+  const [generatedExam, setGeneratedExam] = useState<any[]>([]);
 
   const handleGeneratePreview = (values: any) => {
-    // Basic structure preview validation
     setStructure(values);
-    message.success('Đã lưu cấu trúc đề tạm thời. Bạn có thể sinh đề từ cấu trúc này.');
+    
+    // --- EXAM GENERATION LOGIC ---
+    let examSet: any[] = [];
+    let hasError = false;
+
+    // Filter questions by subject
+    const subjectQuestions = questions.filter(q => q.subject === values.subject);
+
+    // Filter by Difficulty
+    ['Dễ', 'Trung bình', 'Khó', 'Rất khó'].forEach(diff => {
+      const required = values.difficulty[diff] || 0;
+      if (required > 0) {
+        const available = subjectQuestions.filter(q => q.difficulty === diff);
+        if (available.length < required) {
+          message.error(`Không đủ câu hỏi độ khó ${diff}. Cần ${required}, chỉ có ${available.length}.`);
+          hasError = true;
+        } else {
+          // Random selection
+          const shuffled = [...available].sort(() => 0.5 - Math.random());
+          examSet = [...examSet, ...shuffled.slice(0, required)];
+        }
+      }
+    });
+
+    if (hasError) {
+      setGeneratedExam([]);
+      return;
+    }
+
+    // Filter by Knowledge Block
+    Object.keys(values.knowledge_block).forEach(blockIdStr => {
+      const blockId = Number(blockIdStr);
+      const required = values.knowledge_block[blockIdStr] || 0;
+      if (required > 0) {
+        const available = subjectQuestions.filter(q => q.knowledge_block === blockId);
+        if (available.length < required) {
+          const blockName = knowledgeBlocks.find(b => b.id === blockId)?.name;
+          message.error(`Không đủ câu hỏi thuộc khối ${blockName}. Cần ${required}, chỉ có ${available.length}.`);
+          hasError = true;
+        }
+        // Note: For simplicity in this assignment, we overwrite constraints if they overlap, 
+        // but normally we need a complex bipartite graph matching algorithm.
+        // We will just do consecutive appending of questions satisfying block requirements.
+        if (!hasError) {
+           const shuffled = [...available].sort(() => 0.5 - Math.random());
+           examSet = [...examSet, ...shuffled.slice(0, required)];
+        }
+      }
+    });
+
+    if (hasError) {
+      setGeneratedExam([]);
+      return;
+    }
+
+    // Remove duplicates recursively if elements got added twice due to naive constraint stacking
+    const uniqueExamSet = Array.from(new Set(examSet.map(a => a.question_id)))
+    .map(id => {
+      return examSet.find(a => a.question_id === id)
+    });
+
+    setGeneratedExam(uniqueExamSet);
+    message.success(`Sinh đề thi thành công với ${uniqueExamSet.length} câu hỏi!`);
   };
 
   return (
