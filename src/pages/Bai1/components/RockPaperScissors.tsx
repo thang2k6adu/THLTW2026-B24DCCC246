@@ -16,9 +16,9 @@ interface MatchHistory {
 
 const CHOICES: Choice[] = ['Kéo', 'Búa', 'Bao'];
 const WIN_CONDITIONS: Record<string, string> = {
-  'Kéo': 'Bao', // Kéo thắng Bao
-  'Búa': 'Kéo', // Búa thắng Kéo
-  'Bao': 'Búa', // Bao thắng Búa
+  'Kéo': 'Bao', 
+  'Búa': 'Kéo', 
+  'Bao': 'Búa', 
 };
 
 const RockPaperScissors = () => {
@@ -27,7 +27,6 @@ const RockPaperScissors = () => {
   const [result, setResult] = useState<Result>(null);
   const [history, setHistory] = useState<MatchHistory[]>([]);
 
-  // Load history from localStorage on mount
   useEffect(() => {
     const saved = localStorage.getItem('rps_history');
     if (saved) {
@@ -39,7 +38,6 @@ const RockPaperScissors = () => {
     }
   }, []);
 
-  // Save to localStorage when history changes
   useEffect(() => {
     localStorage.setItem('rps_history', JSON.stringify(history));
   }, [history]);
@@ -47,13 +45,11 @@ const RockPaperScissors = () => {
   const play = (pChoice: Choice) => {
     if (!pChoice) return;
     
-    // Random computer choice
     const cChoice = CHOICES[Math.floor(Math.random() * CHOICES.length)];
     
     setPlayerChoice(pChoice);
     setComputerChoice(cChoice);
     
-    // Determine winner
     let currentResult: Result = 'Hòa';
     if (WIN_CONDITIONS[pChoice] === cChoice) {
       currentResult = 'Thắng';
@@ -63,7 +59,6 @@ const RockPaperScissors = () => {
     
     setResult(currentResult);
 
-    // Add to history
     const newMatch: MatchHistory = {
       key: Date.now(),
       time: new Date().toLocaleTimeString(),
@@ -78,7 +73,7 @@ const RockPaperScissors = () => {
   const getResultColor = (res: Result) => {
     if (res === 'Thắng') return 'success';
     if (res === 'Thua') return 'error';
-    return 'warning'; // Hòa
+    return 'warning';   
   };
 
   const columns = [
@@ -98,10 +93,10 @@ const RockPaperScissors = () => {
   };
 
   return (
-    <Card style={{ margin: 24 }} title="Trò chơi Oẳn Tù Tì">
+    <Card style={{ margin: 24 }} title="trò chơi oẳn tù tì">
       <Row justify="center" align="middle" gutter={32}>
         <Col span={10} style={{ textAlign: 'center' }}>
-          <Title level={4}>Người chơi</Title>
+          <Title level={4}>người choiw</Title>
           <div style={{ height: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px dashed #d9d9d9', borderRadius: 8, marginBottom: 16, fontSize: '3rem' }}>
             {playerChoice ? <span>{playerChoice}</span> : <Text type="secondary">Chưa chọn</Text>}
           </div>
@@ -119,24 +114,24 @@ const RockPaperScissors = () => {
         </Col>
         
         <Col span={10} style={{ textAlign: 'center' }}>
-          <Title level={4}>Máy tính</Title>
+          <Title level={4}>máy</Title>
           <div style={{ height: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px dashed #d9d9d9', borderRadius: 8, marginBottom: 16, fontSize: '3rem' }}>
-            {computerChoice ? <span>{computerChoice}</span> : <Text type="secondary">Đang chờ...</Text>}
+            {computerChoice ? <span>{computerChoice}</span> : <Text type="secondary">waiting...</Text>}
           </div>
         </Col>
       </Row>
       
       <div style={{ textAlign: 'center', marginTop: 32, height: 60 }}>
         {result ? (
-          <Title level={3} type={getResultColor(result) === 'success' ? 'success' : getResultColor(result) === 'error' ? 'danger' : 'warning'}>Kết quả: Bạn {result}!</Title>
+          <Title level={3} type={getResultColor(result) === 'success' ? 'success' : getResultColor(result) === 'error' ? 'danger' : 'warning'}>Kết quả:  {result}</Title>
         ) : (
-          <Title level={3} type="secondary">Vui lòng chọn Kéo, Búa, hoặc Bao</Title>
+          <Title level={3} type="secondary">hãy chọn kéo, búa, hoặc bao</Title>
         )}
       </div>
 
       <div style={{ marginTop: 48 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-          <Title level={4}>Lịch sử đấu</Title>
+          <Title level={4}>lịch sử đấu</Title>
           <Button danger onClick={clearHistory} disabled={history.length === 0}>Xóa lịch sử</Button>
         </div>
         <Table 
