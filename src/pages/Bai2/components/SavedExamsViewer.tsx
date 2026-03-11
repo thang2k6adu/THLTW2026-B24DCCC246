@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { Card, Table, Tag, Popconfirm, Button, Space, Modal, Typography } from 'antd';
+import { Card, Table, Tag, Popconfirm, Button, Space, Modal, Typography, Tabs } from 'antd';
 import { useModel } from 'umi';
 
 const { Text } = Typography;
 
 const SavedExamsViewer = () => {
-  const { exams, removeExam, knowledgeBlocks } = useModel('exam');
+  const { exams, removeExam, knowledgeBlocks, savedStructures, removeStructure } = useModel('exam');
   const [viewingExam, setViewingExam] = useState<any>(null);
+  const [viewingStructure, setViewingStructure] = useState<any>(null);
 
   const getDifficultyColor = (diff: string) => {
     switch(diff) {
@@ -42,6 +43,25 @@ const SavedExamsViewer = () => {
     },
   ];
 
+  const structColumns = [
+    { title: 'Mã Cấu Trúc', dataIndex: 'id', key: 'id', width: 150 },
+    { title: 'Tên / Môn', dataIndex: 'name', key: 'name' },
+    { title: 'Ngày Lưu', dataIndex: 'createdAt', key: 'createdAt', render: (val: string) => new Date(val).toLocaleString() },
+    {
+      title: 'Hành động',
+      key: 'action',
+      width: 150,
+      render: (_: any, record: any) => (
+        <Space size="middle">
+          <Button type="link" onClick={() => setViewingStructure(record)}>Xem cấu trúc</Button>
+          <Popconfirm title="Xóa cấu trúc này?" onConfirm={() => removeStructure && removeStructure(record.id)}>
+            <Button type="link" danger>Xóa</Button>
+          </Popconfirm>
+        </Space>
+      ),
+    },
+  ];
+
   const questionColumns = [
     { title: 'Mã CH', dataIndex: 'question_id', key: 'question_id', width: 80 },
     { title: 'Nội dung', dataIndex: 'content', key: 'content' },
@@ -65,13 +85,25 @@ const SavedExamsViewer = () => {
   ];
 
   return (
-    <Card title="Danh sách Đã Đề Thi Đã Lưu">
-      <Table 
-        dataSource={exams || []} 
-        columns={columns} 
-        rowKey="id" 
-        size="small"
-      />
+    <Card title="Dữ liệu đã lưu" style={{ marginBottom: 24 }}>
+      <Tabs defaultActiveKey="1">
+        <Tabs.TabPane tab="Đề Thi Đã Lưu" key="1">
+          <Table 
+            dataSource={exams || []} 
+            columns={columns} 
+            rowKey="id" 
+            size="small"
+          />
+        </Tabs.TabPane>
+        <Tabs.TabPane tab="Cấu Trúc Đã Lưu" key="2">
+          <Table 
+            dataSource={savedStructures || []} 
+            columns={structColumns} 
+            rowKey="id" 
+            size="small"
+          />
+        </Tabs.TabPane>
+      </Tabs>
 
       <Modal
         title={`Chi tiết đề thi: ${viewingExam?.id}`}
@@ -97,6 +129,34 @@ const SavedExamsViewer = () => {
               size="small"
             />
           </>
+        )}
+      </Modal>
+
+      <Modal
+        title={`Chi tiết cấu trúc: ${viewingStructure?.id}`}
+        visible={!!viewingStructure}
+        onCancel={() => setViewingStructure(null)}
+        footer={[
+          <Button key="close" onClick={() => setViewingStructure(null)}>Đóng</Button>
+        ]}
+      >
+        {viewingStructure && (
+          <div>
+            <Text strong>Môn học:</Text> {viewingStructure.data?.subject} <br />
+            <Text strong>Độ khó:</Text>
+            <ul>
+              {Object.entries(viewingStructure.data?.difficulty || {}).map(([diff, count]) => (
+                <li key={diff}>{diff}: {Number(count)} câu</li>
+              ))}
+            </ul>
+            <Text strong>Khối kiến thức:</Text>
+            <ul>
+              {Object.entries(viewingStructure.data?.knowledge_block || {}).map(([blockId, count]) => {
+                const bName = knowledgeBlocks.find(b => b.id === Number(blockId))?.name || blockId;
+                return <li key={blockId}>{bName}: {Number(count)} câu</li>
+              })}
+            </ul>
+          </div>
         )}
       </Modal>
     </Card>

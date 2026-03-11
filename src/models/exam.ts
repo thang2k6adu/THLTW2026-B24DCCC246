@@ -10,6 +10,7 @@ export default () => {
   const [subjects, setSubjects] = useState<any[]>([]);
   const [questions, setQuestions] = useState<any[]>([]);
   const [exams, setExams] = useState<any[]>([]);
+  const [savedStructures, setSavedStructures] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   // --- Knowledge Blocks ---
@@ -96,6 +97,15 @@ export default () => {
     setExams(prev => prev.filter(e => e.id !== id));
   };
 
+  // --- Exam Structures (Client-side) ---
+  const saveStructure = (struct: any) => {
+    setSavedStructures(prev => [struct, ...prev]);
+  };
+
+  const removeStructure = (id: string) => {
+    setSavedStructures(prev => prev.filter(e => e.id !== id));
+  };
+
   return {
     loading,
     
@@ -117,6 +127,11 @@ export default () => {
     // Generated Exams History (Client-side only)
     exams,
     saveExam,
-    removeExam
+    removeExam,
+
+    // Saved Structures History (Client-side only)
+    savedStructures,
+    saveStructure,
+    removeStructure
   };
 };

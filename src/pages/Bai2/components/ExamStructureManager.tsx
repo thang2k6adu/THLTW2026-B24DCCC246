@@ -6,7 +6,7 @@ const { Option } = Select;
 const { Title, Text } = Typography;
 
 const ExamStructureManager = () => {
-  const { subjects, knowledgeBlocks, questions } = useModel('exam');
+  const { subjects, knowledgeBlocks, questions, saveExam, saveStructure } = useModel('exam');
   const [form] = Form.useForm();
   
   // Dynamic generated structure representation (temporary state before submit)
@@ -82,24 +82,6 @@ const ExamStructureManager = () => {
     message.success(`Sinh đề thi thành công với ${uniqueExamSet.length} câu hỏi!`);
   };
 
-  const handleSaveExam = () => {
-    if (!generatedExam || generatedExam.length === 0) return;
-    const { saveExam } = useModel('exam', (m: any) => ({ saveExam: m.saveExam }));
-    const newExam = {
-      id: `EXAM-${new Date().getTime()}`,
-      subject: structure?.subject,
-      questions: generatedExam,
-      createdAt: new Date().toISOString()
-    };
-    if (saveExam) {
-       saveExam(newExam);
-       message.success('Đã lưu đề thi thành công!');
-       setGeneratedExam([]); // clear after saving
-       form.resetFields();
-       setStructure(null);
-    }
-  }
-
   const examColumns = [
     { title: 'Mã CH', dataIndex: 'question_id', key: 'question_id', width: 100 },
     { title: 'Nội dung', dataIndex: 'content', key: 'content' },
@@ -109,7 +91,7 @@ const ExamStructureManager = () => {
       key: 'difficulty',
       width: 120,
       render: (val: string) => {
-        let color = val === 'Dễ' ? 'success' : val === 'Trung bình' ? 'processing' : val === 'Khó' ? 'warning' : 'error';
+        const color = val === 'Dễ' ? 'success' : val === 'Trung bình' ? 'processing' : val === 'Khó' ? 'warning' : 'error';
         return <Tag color={color}>{val}</Tag>;
       }
     },
@@ -176,6 +158,19 @@ const ExamStructureManager = () => {
         <Form.Item>
           <Space>
             <Button type="primary" htmlType="submit">Sinh đề thi</Button>
+            <Button htmlType="button" onClick={() => {
+                form.validateFields().then(values => {
+                    if (saveStructure) {
+                        saveStructure({
+                            id: `STRUCT-${new Date().getTime()}`,
+                            name: `Cấu trúc môn ${values.subject}`,
+                            data: values,
+                            createdAt: new Date().toISOString()
+                        });
+                        message.success('Lưu cấu trúc đề thi thành công!');
+                    }
+                }).catch(() => message.error('Vui lòng điền đủ thông tin cấu trúc.'));
+            }}>Lưu cấu trúc đề thi</Button>
             <Button htmlType="button" onClick={() => { form.resetFields(); setStructure(null); setGeneratedExam([]); }}>Làm mới cấu trúc</Button>
           </Space>
         </Form.Item>
@@ -192,10 +187,9 @@ const ExamStructureManager = () => {
           />
           <div style={{ marginTop: 16, textAlign: 'right' }}>
             <Button type="primary" onClick={() => {
-                if (window.confirm("Bạn có chắc chắn muốn lưu đề thi này không?")) {
-                    const saveExamFn = useModel('exam', (m: any) => m.saveExam);
-                    if (saveExamFn) {
-                        saveExamFn({
+                if (window.confirm('Bạn có chắc chắn muốn lưu đề thi này không?')) {
+                    if (saveExam) {
+                        saveExam({
                           id: `EXAM-${new Date().getTime()}`,
                           subject: structure?.subject,
                           questions: generatedExam,
