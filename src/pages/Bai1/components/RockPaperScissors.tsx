@@ -44,15 +44,6 @@ const RockPaperScissors = () => {
     localStorage.setItem('rps_history', JSON.stringify(history));
   }, [history]);
 
-  const getIcon = (choice: Choice) => {
-    switch(choice) {
-      case 'Kéo': return '✌️';
-      case 'Búa': return '✊';
-      case 'Bao': return '✋';
-      default: return '';
-    }
-  };
-
   const play = (pChoice: Choice) => {
     if (!pChoice) return;
     
@@ -92,8 +83,8 @@ const RockPaperScissors = () => {
 
   const columns = [
     { title: 'Thời gian', dataIndex: 'time', key: 'time' },
-    { title: 'Người chơi', dataIndex: 'player', key: 'player', render: (val: Choice) => `${val} ${getIcon(val)}` },
-    { title: 'Máy tính', dataIndex: 'computer', key: 'computer', render: (val: Choice) => `${val} ${getIcon(val)}` },
+    { title: 'Người chơi', dataIndex: 'player', key: 'player' },
+    { title: 'Máy tính', dataIndex: 'computer', key: 'computer' },
     { 
       title: 'Kết quả', 
       dataIndex: 'result', 
@@ -112,12 +103,12 @@ const RockPaperScissors = () => {
         <Col span={10} style={{ textAlign: 'center' }}>
           <Title level={4}>Người chơi</Title>
           <div style={{ height: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px dashed #d9d9d9', borderRadius: 8, marginBottom: 16, fontSize: '3rem' }}>
-            {playerChoice ? <span>{playerChoice} {getIcon(playerChoice)}</span> : <Text type="secondary">Chưa chọn</Text>}
+            {playerChoice ? <span>{playerChoice}</span> : <Text type="secondary">Chưa chọn</Text>}
           </div>
           <Space>
             {CHOICES.map(c => (
               <Button key={c as string} size="large" onClick={() => play(c)}>
-                {c} {getIcon(c)}
+                {c}
               </Button>
             ))}
           </Space>
@@ -130,7 +121,7 @@ const RockPaperScissors = () => {
         <Col span={10} style={{ textAlign: 'center' }}>
           <Title level={4}>Máy tính</Title>
           <div style={{ height: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px dashed #d9d9d9', borderRadius: 8, marginBottom: 16, fontSize: '3rem' }}>
-            {computerChoice ? <span>{computerChoice} {getIcon(computerChoice)}</span> : <Text type="secondary">Đang chờ...</Text>}
+            {computerChoice ? <span>{computerChoice}</span> : <Text type="secondary">Đang chờ...</Text>}
           </div>
         </Col>
       </Row>
