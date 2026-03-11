@@ -32,6 +32,13 @@ export default () => {
     return res;
   };
 
+  const editKnowledgeBlock = async (id: number, name: string) => {
+    const { updateKnowledgeBlock } = await import('@/services/exam');
+    const res = await updateKnowledgeBlock(id, { name });
+    if (res?.data?.success) await fetchKnowledgeBlocks();
+    return res;
+  };
+
   const removeKnowledgeBlock = async (id: number) => {
     const res = await deleteKnowledgeBlock(id);
     if (res?.data?.success) await fetchKnowledgeBlocks();
@@ -53,6 +60,13 @@ export default () => {
 
   const addSubject = async (data: any) => {
     const res = await createSubject(data);
+    if (res?.data?.success) await fetchSubjects();
+    return res;
+  };
+
+  const editSubject = async (code: string, data: any) => {
+    const { updateSubject } = await import('@/services/exam');
+    const res = await updateSubject(code, data);
     if (res?.data?.success) await fetchSubjects();
     return res;
   };
@@ -112,11 +126,13 @@ export default () => {
     knowledgeBlocks,
     fetchKnowledgeBlocks,
     addKnowledgeBlock,
+    editKnowledgeBlock,
     removeKnowledgeBlock,
 
     subjects,
     fetchSubjects,
     addSubject,
+    editSubject,
     removeSubject,
 
     questions,

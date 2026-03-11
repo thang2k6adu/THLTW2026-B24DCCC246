@@ -3,18 +3,35 @@ import { Table, Button, Space, Popconfirm, Modal, Form, Input, Card } from 'antd
 import { useModel } from 'umi';
 
 const KnowledgeBlockManager = () => {
-  const { knowledgeBlocks, loading, fetchKnowledgeBlocks, addKnowledgeBlock, removeKnowledgeBlock } = useModel('exam');
+  const { knowledgeBlocks, loading, fetchKnowledgeBlocks, addKnowledgeBlock, editKnowledgeBlock, removeKnowledgeBlock } = useModel('exam');
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [form] = Form.useForm();
 
   useEffect(() => {
     fetchKnowledgeBlocks();
   }, []);
 
-  const handleAdd = async (values: any) => {
-    await addKnowledgeBlock(values.name);
+  const handleOpenModal = (record?: any) => {
+    if (record) {
+      setEditingId(record.id);
+      form.setFieldsValue({ name: record.name });
+    } else {
+      setEditingId(null);
+      form.resetFields();
+    }
+    setIsModalVisible(true);
+  };
+
+  const handleSave = async (values: any) => {
+    if (editingId) {
+      await editKnowledgeBlock(editingId, values.name);
+    } else {
+      await addKnowledgeBlock(values.name);
+    }
     setIsModalVisible(false);
     form.resetFields();
+    setEditingId(null);
   };
 
   const columns = [
@@ -26,6 +43,7 @@ const KnowledgeBlockManager = () => {
       width: 150,
       render: (_: any, record: any) => (
         <Space size="middle">
+          <Button type="link" onClick={() => handleOpenModal(record)}>Sửa</Button>
           <Popconfirm title="Xóa khối kiến thức này?" onConfirm={() => removeKnowledgeBlock(record.id)}>
             <Button type="link" danger>Xóa</Button>
           </Popconfirm>
@@ -35,7 +53,7 @@ const KnowledgeBlockManager = () => {
   ];
 
   return (
-    <Card title="Quản lý Khối Kiến Thức" extra={<Button type="primary" onClick={() => setIsModalVisible(true)}>Thêm mới</Button>}>
+    <Card title="Quản lý Khối Kiến Thức" extra={<Button type="primary" onClick={() => handleOpenModal()}>Thêm mới</Button>}>
       <Table 
         dataSource={knowledgeBlocks} 
         columns={columns} 
@@ -45,12 +63,12 @@ const KnowledgeBlockManager = () => {
       />
 
       <Modal
-        title="Thêm Khối Kiến Thức"
+        title={editingId ? 'Sửa Khối Kiến Thức' : 'Thêm Khối Kiến Thức'}
         visible={isModalVisible}
         onOk={() => form.submit()}
-        onCancel={() => { setIsModalVisible(false); form.resetFields(); }}
+        onCancel={() => { setIsModalVisible(false); form.resetFields(); setEditingId(null); }}
       >
-        <Form form={form} layout="vertical" onFinish={handleAdd}>
+        <Form form={form} layout="vertical" onFinish={handleSave}>
           <Form.Item name="name" label="Tên Khối Kiến Thức" rules={[{ required: true, message: 'Vui lòng nhập tên!' }]}>
             <Input />
           </Form.Item>

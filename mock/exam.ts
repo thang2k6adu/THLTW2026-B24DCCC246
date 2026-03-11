@@ -3,8 +3,9 @@ import { Request, Response } from 'express';
 // Define Mock Data
 let kholKienThuc = [
   { id: 1, name: 'Tổng quan' },
-  { id: 2, name: 'Tương tác người máy' },
-  { id: 3, name: 'Thiết kế giao diện' }
+  { id: 2, name: 'Cơ sở' },
+  { id: 3, name: 'Chuyên sâu' },
+  { id: 4, name: 'Nâng cao' }
 ];
 
 let danhMucMonHoc = [
@@ -14,7 +15,7 @@ let danhMucMonHoc = [
 
 let cauHoiList = [
   { question_id: 'Q01', subject: 'INT3132', content: 'Web là gì?', difficulty: 'Dễ', knowledge_block: 1 },
-  { question_id: 'Q02', subject: 'INT3132', content: 'Thế nào là ReactJS?', difficulty: 'Trung bình', knowledge_block: 1 }
+  { question_id: 'Q02', subject: 'INT3132', content: 'Thế nào là ReactJS?', difficulty: 'Trung bình', knowledge_block: 2 }
 ];
 
 // Provide delay to simulate network
@@ -32,6 +33,18 @@ export default {
     const newBlock = { id: Date.now(), name };
     kholKienThuc.push(newBlock);
     res.send({ success: true, data: newBlock });
+  },
+  'PUT /api/exam/knowledge-blocks/:id': async (req: Request, res: Response) => {
+    await delay(300);
+    const { id } = req.params;
+    const { name } = req.body;
+    const index = kholKienThuc.findIndex(b => b.id === Number(id));
+    if (index !== -1) {
+      kholKienThuc[index].name = name;
+      res.send({ success: true, data: kholKienThuc[index] });
+    } else {
+      res.status(404).send({ success: false, message: 'Not Found' });
+    }
   },
   'DELETE /api/exam/knowledge-blocks/:id': async (req: Request, res: Response) => {
     await delay(300);
@@ -51,6 +64,19 @@ export default {
     const newSub = { subject_code, subject_name, credits };
     danhMucMonHoc.push(newSub);
     res.send({ success: true, data: newSub });
+  },
+  'PUT /api/exam/subjects/:code': async (req: Request, res: Response) => {
+    await delay(300);
+    const { code } = req.params;
+    const { subject_name, credits } = req.body;
+    const index = danhMucMonHoc.findIndex(s => s.subject_code === code);
+    if (index !== -1) {
+      danhMucMonHoc[index].subject_name = subject_name;
+      danhMucMonHoc[index].credits = credits;
+      res.send({ success: true, data: danhMucMonHoc[index] });
+    } else {
+      res.status(404).send({ success: false, message: 'Not Found' });
+    }
   },
   'DELETE /api/exam/subjects/:code': async (req: Request, res: Response) => {
     await delay(300);

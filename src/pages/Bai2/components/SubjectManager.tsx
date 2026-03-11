@@ -3,18 +3,39 @@ import { Table, Button, Space, Popconfirm, Modal, Form, Input, InputNumber, Card
 import { useModel } from 'umi';
 
 const SubjectManager = () => {
-  const { subjects, loading, fetchSubjects, addSubject, removeSubject } = useModel('exam');
+  const { subjects, loading, fetchSubjects, addSubject, editSubject, removeSubject } = useModel('exam');
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [editingCode, setEditingCode] = useState<string | null>(null);
   const [form] = Form.useForm();
 
   useEffect(() => {
     fetchSubjects();
   }, []);
 
-  const handleAdd = async (values: any) => {
-    await addSubject(values);
+  const handleOpenModal = (record?: any) => {
+    if (record) {
+      setEditingCode(record.subject_code);
+      form.setFieldsValue({
+        subject_code: record.subject_code,
+        subject_name: record.subject_name,
+        credits: record.credits
+      });
+    } else {
+      setEditingCode(null);
+      form.resetFields();
+    }
+    setIsModalVisible(true);
+  };
+
+  const handleSave = async (values: any) => {
+    if (editingCode) {
+      await editSubject(editingCode, values);
+    } else {
+      await addSubject(values);
+    }
     setIsModalVisible(false);
     form.resetFields();
+    setEditingCode(null);
   };
 
   const columns = [
@@ -27,6 +48,7 @@ const SubjectManager = () => {
       width: 150,
       render: (_: any, record: any) => (
         <Space size="middle">
+          <Button type="link" onClick={() => handleOpenModal(record)}>Sửa</Button>
           <Popconfirm title="Xóa môn học này?" onConfirm={() => removeSubject(record.subject_code)}>
             <Button type="link" danger>Xóa</Button>
           </Popconfirm>
@@ -36,7 +58,7 @@ const SubjectManager = () => {
   ];
 
   return (
-    <Card title="Quản lý Môn Học" extra={<Button type="primary" onClick={() => setIsModalVisible(true)}>Thêm mới</Button>}>
+    <Card title="Quản lý Môn Học" extra={<Button type="primary" onClick={() => handleOpenModal()}>Thêm mới</Button>}>
       <Table 
         dataSource={subjects} 
         columns={columns} 
@@ -46,14 +68,14 @@ const SubjectManager = () => {
       />
 
       <Modal
-        title="Thêm Môn Học"
+        title={editingCode ? 'Sửa Môn Học' : 'Thêm Môn Học'}
         visible={isModalVisible}
         onOk={() => form.submit()}
-        onCancel={() => { setIsModalVisible(false); form.resetFields(); }}
+        onCancel={() => { setIsModalVisible(false); form.resetFields(); setEditingCode(null); }}
       >
-        <Form form={form} layout="vertical" onFinish={handleAdd}>
+        <Form form={form} layout="vertical" onFinish={handleSave}>
           <Form.Item name="subject_code" label="Mã Môn Học" rules={[{ required: true, message: 'Vui lòng nhập mã môn!' }]}>
-            <Input />
+            <Input disabled={!!editingCode} />
           </Form.Item>
           <Form.Item name="subject_name" label="Tên Môn Học" rules={[{ required: true, message: 'Vui lòng nhập tên môn!' }]}>
             <Input />

@@ -9,6 +9,10 @@ export async function createKnowledgeBlock(data: { name: string }) {
   return request.post('/api/exam/knowledge-blocks', { data });
 }
 
+export async function updateKnowledgeBlock(id: number, data: { name: string }) {
+  return request.put(`/api/exam/knowledge-blocks/${id}`, { data });
+}
+
 export async function deleteKnowledgeBlock(id: number) {
   return request.delete(`/api/exam/knowledge-blocks/${id}`);
 }
@@ -21,6 +25,10 @@ export async function getSubjects() {
 
 export async function createSubject(data: { subject_code: string; subject_name: string; credits: number }) {
   return request.post('/api/exam/subjects', { data });
+}
+
+export async function updateSubject(code: string, data: { subject_name: string; credits: number }) {
+  return request.put(`/api/exam/subjects/${code}`, { data });
 }
 
 export async function deleteSubject(code: string) {
