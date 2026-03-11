@@ -82,6 +82,31 @@ const ExamStructureManager = () => {
     message.success(`Sinh đề thi thành công với ${uniqueExamSet.length} câu hỏi!`);
   };
 
+  const examColumns = [
+    { title: 'Mã CH', dataIndex: 'question_id', key: 'question_id', width: 100 },
+    { title: 'Nội dung', dataIndex: 'content', key: 'content' },
+    { 
+      title: 'Độ khó', 
+      dataIndex: 'difficulty', 
+      key: 'difficulty',
+      width: 120,
+      render: (val: string) => {
+        let color = val === 'Dễ' ? 'success' : val === 'Trung bình' ? 'processing' : val === 'Khó' ? 'warning' : 'error';
+        return <Tag color={color}>{val}</Tag>;
+      }
+    },
+    { 
+      title: 'Khối KT', 
+      dataIndex: 'knowledge_block', 
+      key: 'knowledge_block',
+      width: 120,
+      render: (val: number) => {
+        const block = knowledgeBlocks.find(b => b.id === val);
+        return block ? block.name : val;
+      }
+    }
+  ];
+
   return (
     <Card title="Cấu trúc Đề thi">
       <Form form={form} layout="vertical" onFinish={handleGeneratePreview}>
@@ -138,11 +163,18 @@ const ExamStructureManager = () => {
         </Form.Item>
       </Form>
 
-      {structure && (
-        <Card type="inner" title="Cấu trúc Đã Định Nghĩa" style={{ marginTop: 16 }}>
-          <Text strong>Môn thi:</Text> {structure.subject} <br />
-          <Text strong>Cấu trúc độ khó:</Text> {JSON.stringify(structure.difficulty)} <br />
-          <Text strong>Cấu trúc phân bổ kiến thức:</Text> {JSON.stringify(structure.knowledge_block)}
+      {generatedExam.length > 0 && (
+        <Card type="inner" title="Danh sách Câu hỏi Đề thi (Gợi ý)" style={{ marginTop: 16 }}>
+          <Table 
+            dataSource={generatedExam} 
+            columns={examColumns} 
+            rowKey="question_id" 
+            pagination={false}
+            size="small"
+          />
+          <div style={{ marginTop: 16, textAlign: 'right' }}>
+            <Button type="primary" onClick={() => message.info("Chức năng lưu đề sẽ được thực hiện ở commit sau.")}>Lưu Đề Thi Này</Button>
+          </div>
         </Card>
       )}
     </Card>
