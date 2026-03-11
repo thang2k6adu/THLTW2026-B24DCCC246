@@ -1,105 +1,110 @@
-import { useState, useCallback } from 'react';
-import { 
-  getKnowledgeBlocks, createKnowledgeBlock, deleteKnowledgeBlock,
-  getSubjects, createSubject, deleteSubject,
-  getQuestions, createQuestion, deleteQuestion
-} from '@/services/exam';
+import { useState, useEffect, useCallback } from 'react';
+
+// Initial Mock Data Fallback
+const INITIAL_KNOWLEDGE_BLOCKS = [
+  { id: 1, name: 'Tổng quan' },
+  { id: 2, name: 'Cơ sở' },
+  { id: 3, name: 'Chuyên sâu' },
+  { id: 4, name: 'Nâng cao' }
+];
+
+const INITIAL_SUBJECTS = [
+  { subject_code: 'INT3132', subject_name: 'THLTWeb', credits: 3 },
+  { subject_code: 'INT3134', subject_name: 'Thiết kế UX/UI', credits: 2 }
+];
+
+const INITIAL_QUESTIONS = [
+  { question_id: 'Q01', subject: 'INT3132', content: 'Web là gì?', difficulty: 'Dễ', knowledge_block: 1 },
+  { question_id: 'Q02', subject: 'INT3132', content: 'Thế nào là ReactJS?', difficulty: 'Trung bình', knowledge_block: 2 }
+];
+
+const loadFromLocal = (key: string, initialData: any) => {
+  const saved = localStorage.getItem(key);
+  if (saved) return JSON.parse(saved);
+  localStorage.setItem(key, JSON.stringify(initialData));
+  return initialData;
+};
 
 export default () => {
-  const [knowledgeBlocks, setKnowledgeBlocks] = useState<any[]>([]);
-  const [subjects, setSubjects] = useState<any[]>([]);
-  const [questions, setQuestions] = useState<any[]>([]);
-  const [exams, setExams] = useState<any[]>([]);
-  const [savedStructures, setSavedStructures] = useState<any[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [knowledgeBlocks, setKnowledgeBlocks] = useState<any[]>(() => loadFromLocal('exam_knowledge_blocks', INITIAL_KNOWLEDGE_BLOCKS));
+  const [subjects, setSubjects] = useState<any[]>(() => loadFromLocal('exam_subjects', INITIAL_SUBJECTS));
+  const [questions, setQuestions] = useState<any[]>(() => loadFromLocal('exam_questions', INITIAL_QUESTIONS));
+  const [exams, setExams] = useState<any[]>(() => loadFromLocal('exam_exams', []));
+  const [savedStructures, setSavedStructures] = useState<any[]>(() => loadFromLocal('exam_saved_structures', []));
+  const [loading] = useState<boolean>(false);
+
+  // Sync to localStorage
+  useEffect(() => { localStorage.setItem('exam_knowledge_blocks', JSON.stringify(knowledgeBlocks)); }, [knowledgeBlocks]);
+  useEffect(() => { localStorage.setItem('exam_subjects', JSON.stringify(subjects)); }, [subjects]);
+  useEffect(() => { localStorage.setItem('exam_questions', JSON.stringify(questions)); }, [questions]);
+  useEffect(() => { localStorage.setItem('exam_exams', JSON.stringify(exams)); }, [exams]);
+  useEffect(() => { localStorage.setItem('exam_saved_structures', JSON.stringify(savedStructures)); }, [savedStructures]);
 
   // --- Knowledge Blocks ---
-  const fetchKnowledgeBlocks = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await getKnowledgeBlocks();
-      if (res?.data?.success) setKnowledgeBlocks(res.data.data);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const fetchKnowledgeBlocks = useCallback(async () => {}, []);
 
   const addKnowledgeBlock = async (name: string) => {
-    const res = await createKnowledgeBlock({ name });
-    if (res?.data?.success) await fetchKnowledgeBlocks();
-    return res;
+    const newBlock = { id: Date.now(), name };
+    setKnowledgeBlocks(prev => [...prev, newBlock]);
+    return { data: { success: true } };
   };
 
   const editKnowledgeBlock = async (id: number, name: string) => {
-    const { updateKnowledgeBlock } = await import('@/services/exam');
-    const res = await updateKnowledgeBlock(id, { name });
-    if (res?.data?.success) await fetchKnowledgeBlocks();
-    return res;
+    setKnowledgeBlocks(prev => prev.map(b => b.id === id ? { ...b, name } : b));
+    return { data: { success: true } };
   };
 
   const removeKnowledgeBlock = async (id: number) => {
-    const res = await deleteKnowledgeBlock(id);
-    if (res?.data?.success) await fetchKnowledgeBlocks();
-    return res;
+    setKnowledgeBlocks(prev => prev.filter(b => b.id !== id));
+    return { data: { success: true } };
   };
 
   // --- Subjects ---
-  const fetchSubjects = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await getSubjects();
-      if (res?.data?.success) setSubjects(res.data.data);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const fetchSubjects = useCallback(async () => {}, []);
 
   const addSubject = async (data: any) => {
-    const res = await createSubject(data);
-    if (res?.data?.success) await fetchSubjects();
-    return res;
+    setSubjects(prev => [...prev, data]);
+    return { data: { success: true } };
   };
 
   const editSubject = async (code: string, data: any) => {
-    const { updateSubject } = await import('@/services/exam');
-    const res = await updateSubject(code, data);
-    if (res?.data?.success) await fetchSubjects();
-    return res;
+    setSubjects(prev => prev.map(s => s.subject_code === code ? { ...s, ...data } : s));
+    return { data: { success: true } };
   };
 
   const removeSubject = async (code: string) => {
-    const res = await deleteSubject(code);
-    if (res?.data?.success) await fetchSubjects();
-    return res;
+    setSubjects(prev => prev.filter(s => s.subject_code !== code));
+    return { data: { success: true } };
   };
 
   // --- Questions ---
-  const fetchQuestions = useCallback(async (params?: any) => {
-    setLoading(true);
-    try {
-      const res = await getQuestions(params);
-      if (res?.data?.success) setQuestions(res.data.data);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
+
+  // To support filtering, let's keep a master list and a filtered list
+  const [filteredQuestions, setFilteredQuestions] = useState<any[]>(questions);
+  
+  // Sync full questions to filtered when it changes (if no filters are active)
+  useEffect(() => {
+    setFilteredQuestions(questions);
+  }, [questions]);
+
+  const fetchQuestionsFiltered = useCallback(async (params?: any) => {
+    let filtered = [...questions];
+    if (params) {
+        if (params.subject) filtered = filtered.filter(q => q.subject === params.subject);
+        if (params.difficulty) filtered = filtered.filter(q => q.difficulty === params.difficulty);
+        if (params.knowledge_block) filtered = filtered.filter(q => q.knowledge_block === Number(params.knowledge_block));
     }
-  }, []);
+    setFilteredQuestions(filtered);
+  }, [questions]);
 
   const addQuestion = async (data: any) => {
-    const res = await createQuestion(data);
-    if (res?.data?.success) await fetchQuestions();
-    return res;
+    setQuestions(prev => [...prev, data]);
+    return { data: { success: true } };
   };
 
   const removeQuestion = async (id: string) => {
-    const res = await deleteQuestion(id);
-    if (res?.data?.success) await fetchQuestions();
-    return res;
+    setQuestions(prev => prev.filter(q => q.question_id !== id));
+    return { data: { success: true } };
   };
 
   // --- Exams (Client-side) ---
@@ -135,17 +140,15 @@ export default () => {
     editSubject,
     removeSubject,
 
-    questions,
-    fetchQuestions,
+    questions: filteredQuestions, // Expose filtered list to components
+    fetchQuestions: fetchQuestionsFiltered, // Use the new filtering function
     addQuestion,
     removeQuestion,
 
-    // Generated Exams History (Client-side only)
     exams,
     saveExam,
     removeExam,
 
-    // Saved Structures History (Client-side only)
     savedStructures,
     saveStructure,
     removeStructure
