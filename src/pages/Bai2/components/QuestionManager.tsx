@@ -14,10 +14,6 @@ const QuestionManager = () => {
   const [searchDifficulty, setSearchDifficulty] = useState<string | undefined>(undefined);
   const [searchBlock, setSearchBlock] = useState<number | undefined>(undefined);
 
-  useEffect(() => {
-    handleSearch();
-  }, []);
-
   const handleSearch = () => {
     fetchQuestions({
       subject: searchSubject,
@@ -25,6 +21,10 @@ const QuestionManager = () => {
       knowledge_block: searchBlock
     });
   };
+
+  useEffect(() => {
+    handleSearch();
+  }, []);
 
   const handleClear = () => {
     setSearchSubject(undefined);
@@ -141,31 +141,6 @@ const QuestionManager = () => {
             </Select>
           </Form.Item>
 
-          <Form.Item name="content" label="Nội dung" rules={[{ required: true, message: 'Nhập nội dung!' }]}>
-            <Input.TextArea rows={3} />
-          </Form.Item>
-
-          <Form.Item name="difficulty" label="Độ khó" rules={[{ required: true, message: 'Chọn độ khó!' }]}>
-            <Select>
-              <Option value="Dễ">Dễ</Option>
-              <Option value="Trung bình">Trung bình</Option>
-              <Option value="Khó">Khó</Option>
-              <Option value="Rất khó">Rất khó</Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item name="knowledge_block" label="Khối Kiến Thức" rules={[{ required: true, message: 'Chọn khối kiến thức!' }]}>
-            <Select placeholder="Chọn khối">
-              {knowledgeBlocks.map(b => <Option key={b.id} value={b.id}>{b.name}</Option>)}
-            </Select>
-          </Form.Item>
-        </Form>
-      </Modal>
-    </Card>
-  );
-};
-
-export default QuestionManager;
           <Form.Item name="content" label="Nội dung" rules={[{ required: true, message: 'Nhập nội dung!' }]}>
             <Input.TextArea rows={3} />
           </Form.Item>
