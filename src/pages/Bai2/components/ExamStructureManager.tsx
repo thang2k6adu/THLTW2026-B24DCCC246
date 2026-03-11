@@ -82,6 +82,24 @@ const ExamStructureManager = () => {
     message.success(`Sinh đề thi thành công với ${uniqueExamSet.length} câu hỏi!`);
   };
 
+  const handleSaveExam = () => {
+    if (!generatedExam || generatedExam.length === 0) return;
+    const { saveExam } = useModel('exam', (m: any) => ({ saveExam: m.saveExam }));
+    const newExam = {
+      id: `EXAM-${new Date().getTime()}`,
+      subject: structure?.subject,
+      questions: generatedExam,
+      createdAt: new Date().toISOString()
+    };
+    if (saveExam) {
+       saveExam(newExam);
+       message.success('Đã lưu đề thi thành công!');
+       setGeneratedExam([]); // clear after saving
+       form.resetFields();
+       setStructure(null);
+    }
+  }
+
   const examColumns = [
     { title: 'Mã CH', dataIndex: 'question_id', key: 'question_id', width: 100 },
     { title: 'Nội dung', dataIndex: 'content', key: 'content' },
@@ -157,8 +175,8 @@ const ExamStructureManager = () => {
 
         <Form.Item>
           <Space>
-            <Button type="primary" htmlType="submit">Lưu cấu trúc tạm thời</Button>
-            <Button htmlType="button" onClick={() => { form.resetFields(); setStructure(null); }}>Làm mới cấu trúc</Button>
+            <Button type="primary" htmlType="submit">Sinh đề thi</Button>
+            <Button htmlType="button" onClick={() => { form.resetFields(); setStructure(null); setGeneratedExam([]); }}>Làm mới cấu trúc</Button>
           </Space>
         </Form.Item>
       </Form>
@@ -173,7 +191,23 @@ const ExamStructureManager = () => {
             size="small"
           />
           <div style={{ marginTop: 16, textAlign: 'right' }}>
-            <Button type="primary" onClick={() => message.info("Chức năng lưu đề sẽ được thực hiện ở commit sau.")}>Lưu Đề Thi Này</Button>
+            <Button type="primary" onClick={() => {
+                if (window.confirm("Bạn có chắc chắn muốn lưu đề thi này không?")) {
+                    const saveExamFn = useModel('exam', (m: any) => m.saveExam);
+                    if (saveExamFn) {
+                        saveExamFn({
+                          id: `EXAM-${new Date().getTime()}`,
+                          subject: structure?.subject,
+                          questions: generatedExam,
+                          createdAt: new Date().toISOString()
+                        });
+                        message.success('Đã lưu đề thi thành công!');
+                        setGeneratedExam([]);
+                        form.resetFields();
+                        setStructure(null);
+                    }
+                }
+            }}>Lưu Đề Thi Này</Button>
           </div>
         </Card>
       )}

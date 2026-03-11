@@ -9,6 +9,7 @@ export default () => {
   const [knowledgeBlocks, setKnowledgeBlocks] = useState<any[]>([]);
   const [subjects, setSubjects] = useState<any[]>([]);
   const [questions, setQuestions] = useState<any[]>([]);
+  const [exams, setExams] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   // --- Knowledge Blocks ---
@@ -86,6 +87,15 @@ export default () => {
     return res;
   };
 
+  // --- Exams (Client-side) ---
+  const saveExam = (exam: any) => {
+    setExams(prev => [exam, ...prev]);
+  };
+
+  const removeExam = (id: string) => {
+    setExams(prev => prev.filter(e => e.id !== id));
+  };
+
   return {
     loading,
     
@@ -102,6 +112,11 @@ export default () => {
     questions,
     fetchQuestions,
     addQuestion,
-    removeQuestion
+    removeQuestion,
+
+    // Generated Exams History (Client-side only)
+    exams,
+    saveExam,
+    removeExam
   };
 };
