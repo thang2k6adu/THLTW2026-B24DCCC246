@@ -44,13 +44,13 @@
 	},
 	{
 		path: '/bai1',
-		name: 'Bài 1 (Trò chơi)',
+		name: 'Bài 1',
 		icon: 'PlaySquareOutlined',
 		component: './Bai1',
 	},
 	{
 		path: '/bai2',
-		name: 'Bài 2 (Thi cử)',
+		name: 'Bài 2',
 		icon: 'DatabaseOutlined',
 		component: './Bai2',
 	},

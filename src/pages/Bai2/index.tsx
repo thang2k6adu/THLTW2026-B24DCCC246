@@ -13,7 +13,7 @@ const Bai2Page = () => {
     <div style={{ padding: 24 }}>
       <Row justify="center">
         <Col span={24} style={{ textAlign: 'center', marginBottom: 24 }}>
-          <Title level={2}>Hệ Thống 2: Quản Lý Thi Khảo Sát</Title>
+          <Title level={2}>Heej thống quản lý ngân hàng câu hỏi</Title>
         </Col>
       </Row>
       <Space direction="vertical" style={{ width: '100%' }} size="large">
