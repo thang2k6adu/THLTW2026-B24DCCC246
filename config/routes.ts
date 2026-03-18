@@ -43,6 +43,19 @@
 		component: './TodoList',
 	},
 
+	
+  {
+    name: 'Đặt lịch',
+    path: '/booking',
+    icon: 'calendar',
+    routes: [
+      { name: 'Dịch vụ', path: 'services', component: './AppointmentSystem/Services' },
+      { name: 'Nhân viên', path: 'employees', component: './AppointmentSystem/Employees' },
+      { name: 'Lịch hẹn', path: 'appointments', component: './AppointmentSystem/Appointments' },
+      { name: 'Đánh giá', path: 'reviews', component: './AppointmentSystem/Reviews' },
+      { name: 'Thống kê', path: 'statistics', component: './AppointmentSystem/Statistics' },
+    ]
+  },
 	// DANH MUC HE THONG
 	// {
 	// 	name: 'DanhMuc',
