@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useModel } from 'umi';
-import { Table, Button, Card, Modal, Form, Input, InputNumber, Space, Checkbox, TimePicker } from 'antd';
+import { Table, Button, Card, Modal, Form, Input, InputNumber, Space, Checkbox, TimePicker, Rate } from 'antd';
 import moment from 'moment';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 const EmployeeManagement = () => {
   const { data, loading, fetch, add, update, remove } = useModel('bookingEmployees');
+  const { data: reviews, fetch: fetchReviews } = useModel('bookingReviews');
   const [visible, setVisible] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form] = Form.useForm();
 
-  useEffect(() => { fetch(); }, []);
+  useEffect(() => { fetch(); fetchReviews(); }, []);
 
   const handleOpen = (record?: any) => {
     form.resetFields();
@@ -85,6 +86,16 @@ const EmployeeManagement = () => {
         const activeDays = DAYS.filter(d => schedule[d]?.active);
         if (activeDays.length === 0) return 'Chưa có lịch';
         return activeDays.map(d => `${d}: ${schedule[d].start || '?'} - ${schedule[d].end || '?'}`).join(', ');
+      }
+    },
+    {
+      title: 'Đánh giá',
+      render: (_: any, r: any) => {
+        const empReviews = reviews.filter((rev: any) => rev.employeeId === r.id);
+        if (empReviews.length === 0) return 'Chưa có';
+        const sum = empReviews.reduce((acc: any, curr: any) => acc + curr.rating, 0);
+        const avg = Math.round((sum / empReviews.length) * 10) / 10;
+        return <Space><Rate disabled allowHalf value={avg} /> ({avg})</Space>;
       }
     },
     {
