@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useModel } from 'umi';
-import { Table, Button, Card, Modal, Form, Select, DatePicker, TimePicker, Space, Tag, message } from 'antd';
+import { Table, Button, Card, Modal, Form, Select, DatePicker, TimePicker, Space, Tag, message, Input } from 'antd';
 import moment from 'moment';
 
 const Appointments = () => {
   const { data, loading, fetch, book, changeStatus } = useModel('bookingAppointments');
+  const { addReview } = useModel('bookingReviews');
   const { data: emps, fetch: fetchEmps } = useModel('bookingEmployees');
   const { data: svcs, fetch: fetchSvcs } = useModel('bookingServices');
   const [visible, setVisible] = useState(false);
+  const [reviewVisible, setReviewVisible] = useState(false);
+  const [activeAppointment, setActiveAppointment] = useState<any>(null);
   const [form] = Form.useForm();
+  const [reviewForm] = Form.useForm();
 
   useEffect(() => { fetch(); fetchEmps(); fetchSvcs(); }, []);
 
@@ -46,6 +50,16 @@ const Appointments = () => {
     if (success) setVisible(false);
   };
 
+  const handleReviewSave = async () => {
+    const vals = await reviewForm.validateFields();
+    await addReview({
+      appointmentId: activeAppointment.id,
+      employeeId: activeAppointment.employeeId,
+      ...vals
+    });
+    setReviewVisible(false);
+  };
+
   const columns = [
     { title: 'ID', dataIndex: 'id' },
     { title: 'Ngày', dataIndex: 'date' },
@@ -55,9 +69,16 @@ const Appointments = () => {
       title: 'Hành động',
       render: (_: any, r: any) => (
         <Space>
-          <Button size="small" onClick={() => changeStatus(r.id, 'confirmed')}>Xác nhận</Button>
-          <Button size="small" onClick={() => changeStatus(r.id, 'completed')}>Hoàn thành</Button>
-          <Button size="small" danger onClick={() => changeStatus(r.id, 'cancelled')}>Hủy</Button>
+          <Button size="small" onClick={() => changeStatus(r.id, 'confirmed')} disabled={r.status !== 'pending'}>Xác nhận</Button>
+          <Button size="small" onClick={() => changeStatus(r.id, 'completed')} disabled={r.status !== 'confirmed'}>Hoàn thành</Button>
+          <Button size="small" danger onClick={() => changeStatus(r.id, 'cancelled')} disabled={r.status === 'completed' || r.status === 'cancelled'}>Hủy</Button>
+          {r.status === 'completed' && (
+             <Button size="small" type="primary" onClick={() => {
+               setActiveAppointment(r);
+               reviewForm.resetFields();
+               setReviewVisible(true);
+             }}>Đánh giá</Button>
+          )}
         </Space>
       )
     }
@@ -77,6 +98,17 @@ const Appointments = () => {
           </Form.Item>
           <Form.Item name="date" label="Ngày" rules={[{ required: true }]}><DatePicker style={{width:'100%'}} /></Form.Item>
           <Form.Item name="time" label="Giờ" rules={[{ required: true }]}><TimePicker style={{width:'100%'}} format="HH:mm" /></Form.Item>
+        </Form>
+      </Modal>
+
+      <Modal visible={reviewVisible} title="Đánh giá dịch vụ" onOk={handleReviewSave} onCancel={() => setReviewVisible(false)}>
+        <Form form={reviewForm} layout="vertical">
+          <Form.Item name="rating" label="Đánh giá (sao)" rules={[{ required: true }]}>
+             <Select>
+               {[1, 2, 3, 4, 5].map(n => <Select.Option key={n} value={n}>{n} sao</Select.Option>)}
+             </Select>
+          </Form.Item>
+          <Form.Item name="comment" label="Bình luận" rules={[{ required: true }]}><Input.TextArea /></Form.Item>
         </Form>
       </Modal>
     </Card>
