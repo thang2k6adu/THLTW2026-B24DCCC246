@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useModel } from 'umi';
-import { Table, Button, Card, Modal, Form, Select, DatePicker, TimePicker, Space, Tag } from 'antd';
+import { Table, Button, Card, Modal, Form, Select, DatePicker, TimePicker, Space, Tag, message } from 'antd';
 import moment from 'moment';
 
 const Appointments = () => {
@@ -14,6 +14,28 @@ const Appointments = () => {
 
   const handleSave = async () => {
     const vals = await form.validateFields();
+
+    const selectedEmployee = emps.find(e => e.id === vals.employeeId);
+    if (selectedEmployee && typeof selectedEmployee.schedule === 'object') {
+      const DAYS_OF_WEEK = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const dayOfWeekName = DAYS_OF_WEEK[vals.date.day()];
+      const scheduleForDay = selectedEmployee.schedule[dayOfWeekName];
+
+      if (!scheduleForDay || !scheduleForDay.active) {
+        message.error(`Nhân viên không làm việc vào ngày ${dayOfWeekName}`);
+        return;
+      }
+
+      const startTime = moment(scheduleForDay.start, 'HH:mm');
+      const endTime = moment(scheduleForDay.end, 'HH:mm');
+      const selectedTime = moment(vals.time.format('HH:mm'), 'HH:mm');
+
+      if (selectedTime.isBefore(startTime) || selectedTime.isAfter(endTime)) {
+        message.error(`Giờ hẹn (${vals.time.format('HH:mm')}) phải nằm trong ca làm việc: ${scheduleForDay.start} - ${scheduleForDay.end}`);
+        return;
+      }
+    }
+
     // Overlap logic checked in backend, handling format bug
     const payload = {
       ...vals,
