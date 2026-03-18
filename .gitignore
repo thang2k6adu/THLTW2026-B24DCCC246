@@ -45,3 +45,4 @@ build
 # Sentry Auth Token
 #.sentryclirc
 
+\ngenerate_commits.py\n
