@@ -46,7 +46,7 @@ const Appointments = () => {
       <Button type="primary" onClick={() => { form.resetFields(); setVisible(true); }} style={{ marginBottom: 16 }}>Đặt lịch</Button>
       <Table rowKey="id" columns={columns} dataSource={data} loading={loading} />
       <Modal visible={visible} title="Đặt lịch hẹn" onOk={handleSave} onCancel={() => setVisible(false)}>
-        <Form form={form} layout="vertical">
+        <Form form={form} layout="horizontal" labelCol={{span: 6}} wrapperCol={{span: 18}}>
           <Form.Item name="employeeId" label="Nhân viên" rules={[{ required: true }]}>
             <Select>{emps.map(e => <Select.Option key={e.id} value={e.id}>{e.name}</Select.Option>)}</Select>
           </Form.Item>
