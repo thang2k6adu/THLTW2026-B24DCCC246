@@ -16,12 +16,12 @@ const Stats = () => {
       <Row gutter={16} style={{ marginBottom: 24 }}>
         <Col span={8}>
           <Card>
-            <Statistic title="Tổng lịch hẹn" value={Object.values(data.appointmentsPerDay).reduce((a:any,b:any)=>a+b, 0) as number} />
+            <Statistic title="Tổng lịch hẹn" value={Object.values(data.appointmentsPerDay).reduce((a: any, b: any) => a+b, 0) as number} />
           </Card>
         </Col>
         <Col span={8}>
           <Card>
-            <Statistic title="Tổng doanh thu DV" value={Object.values(data.revenueByService).reduce((a:any,b:any)=>a+b, 0) as number} />
+            <Statistic title="Tổng doanh thu DV" value={Object.values(data.revenueByService).reduce((a: any, b: any) => a+b, 0) as number} />
           </Card>
         </Col>
       </Row>

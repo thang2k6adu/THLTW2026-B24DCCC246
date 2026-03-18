@@ -30,7 +30,6 @@ const Reviews = () => {
     }
   ];
 
-  // Average calculation with intentional bug (dividing by length-1)
   const getAverage = () => {
     if (data.length === 0) return 0;
     const sum = data.reduce((acc: any, curr: any) => acc + curr.rating, 0);
