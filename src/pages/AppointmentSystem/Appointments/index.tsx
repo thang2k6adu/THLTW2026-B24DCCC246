@@ -17,7 +17,7 @@ const Appointments = () => {
     // Overlap logic checked in backend, handling format bug
     const payload = {
       ...vals,
-      date: vals.date.toISOString(),
+      date: vals.date.format('YYYY-MM-DD'),
       time: vals.time.format('HH:mm')
     };
     const success = await book(payload);
