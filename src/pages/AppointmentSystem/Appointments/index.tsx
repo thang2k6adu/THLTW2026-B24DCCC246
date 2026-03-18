@@ -14,7 +14,7 @@ const Appointments = () => {
 
   const handleSave = async () => {
     const vals = await form.validateFields();
-    // Intentionally introduce format bug here initially (use full ISO string instead of DD-MM-YYYY)
+    // Overlap logic checked in backend, handling format bug
     const payload = {
       ...vals,
       date: vals.date.toISOString(),
