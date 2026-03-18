@@ -9,23 +9,33 @@ export default () => {
   const fetch = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await api.getReviews();
-      setData(res.data?.data || []);
+      const stored = localStorage.getItem('bookingReviews');
+      if (stored) {
+        setData(JSON.parse(stored));
+      } else {
+        const res = await api.getReviews();
+        const initialData = res.data?.data || [];
+        setData(initialData);
+        localStorage.setItem('bookingReviews', JSON.stringify(initialData));
+      }
     } finally {
       setLoading(false);
     }
   }, []);
 
   const addReview = async (payload: any) => {
-    await api.createReview(payload);
+    const newReview = { id: Date.now(), reply: '', ...payload };
+    const newData = [...data, newReview];
+    setData(newData);
+    localStorage.setItem('bookingReviews', JSON.stringify(newData));
     message.success('Đánh giá thành công');
-    fetch();
   };
 
   const reply = async (id: number, text: string) => {
-    await api.replyReview(id, text);
+    const newData = data.map(r => r.id === Number(id) ? { ...r, reply: text } : r);
+    setData(newData);
+    localStorage.setItem('bookingReviews', JSON.stringify(newData));
     message.success('Phản hồi thành công');
-    fetch();
   };
 
   return { data, loading, fetch, addReview, reply };

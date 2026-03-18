@@ -9,8 +9,15 @@ export default () => {
   const fetch = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await api.getAppointments();
-      setData(res.data?.data || []);
+      const stored = localStorage.getItem('bookingAppointments');
+      if (stored) {
+        setData(JSON.parse(stored));
+      } else {
+        const res = await api.getAppointments();
+        const initialData = res.data?.data || [];
+        setData(initialData);
+        localStorage.setItem('bookingAppointments', JSON.stringify(initialData));
+      }
     } finally {
       setLoading(false);
     }
@@ -18,9 +25,17 @@ export default () => {
 
   const book = async (payload: any) => {
     try {
-      await api.createAppointment(payload);
+      // Overlap check
+      const isOverlap = data.some(a => a.date === payload.date && a.time === payload.time && a.employeeId === payload.employeeId && a.status !== 'cancelled');
+      if (isOverlap) {
+        message.error('Lịch hẹn bị trùng!');
+        return false;
+      }
+      const newAppointment = { id: Date.now(), status: 'pending', ...payload };
+      const newData = [...data, newAppointment];
+      setData(newData);
+      localStorage.setItem('bookingAppointments', JSON.stringify(newData));
       message.success('Đặt lịch thành công');
-      fetch();
       return true;
     } catch (e: any) {
       message.error(e?.response?.data?.message || 'Có lỗi xảy ra');
@@ -29,9 +44,10 @@ export default () => {
   };
 
   const changeStatus = async (id: number, status: string) => {
-    await api.updateAppointmentStatus(id, status);
+    const newData = data.map(a => a.id === Number(id) ? { ...a, status } : a);
+    setData(newData);
+    localStorage.setItem('bookingAppointments', JSON.stringify(newData));
     message.success('Cập nhật trạng thái thành công');
-    fetch();
   };
 
   return { data, loading, fetch, book, changeStatus };

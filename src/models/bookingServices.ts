@@ -9,29 +9,40 @@ export default () => {
   const fetch = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await api.getServices();
-      setData(res.data?.data || []);
+      const stored = localStorage.getItem('bookingServices');
+      if (stored) {
+        setData(JSON.parse(stored));
+      } else {
+        const res = await api.getServices();
+        const initialData = res.data?.data || [];
+        setData(initialData);
+        localStorage.setItem('bookingServices', JSON.stringify(initialData));
+      }
     } finally {
       setLoading(false);
     }
   }, []);
 
   const add = async (payload: any) => {
-    await api.createService(payload);
+    const newService = { id: Date.now(), ...payload };
+    const newData = [...data, newService];
+    setData(newData);
+    localStorage.setItem('bookingServices', JSON.stringify(newData));
     message.success('Thêm thành công');
-    fetch();
   };
 
   const update = async (id: number, payload: any) => {
-    await api.updateService(id, payload);
+    const newData = data.map(s => s.id === Number(id) ? { ...s, ...payload } : s);
+    setData(newData);
+    localStorage.setItem('bookingServices', JSON.stringify(newData));
     message.success('Cập nhật thành công');
-    fetch();
   };
 
   const remove = async (id: number) => {
-    await api.deleteService(id);
+    const newData = data.filter(s => s.id !== Number(id));
+    setData(newData);
+    localStorage.setItem('bookingServices', JSON.stringify(newData));
     message.success('Xóa thành công');
-    fetch();
   };
 
   return { data, loading, fetch, add, update, remove };

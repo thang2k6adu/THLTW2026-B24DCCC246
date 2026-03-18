@@ -9,29 +9,40 @@ export default () => {
   const fetch = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await api.getEmployees();
-      setData(res.data?.data || []);
+      const stored = localStorage.getItem('bookingEmployees');
+      if (stored) {
+        setData(JSON.parse(stored));
+      } else {
+        const res = await api.getEmployees();
+        const initialData = res.data?.data || [];
+        setData(initialData);
+        localStorage.setItem('bookingEmployees', JSON.stringify(initialData));
+      }
     } finally {
       setLoading(false);
     }
   }, []);
 
   const add = async (payload: any) => {
-    await api.createEmployee(payload);
+    const newEmployee = { id: Date.now(), ...payload };
+    const newData = [...data, newEmployee];
+    setData(newData);
+    localStorage.setItem('bookingEmployees', JSON.stringify(newData));
     message.success('Thêm thành công');
-    fetch();
   };
 
   const update = async (id: number, payload: any) => {
-    await api.updateEmployee(id, payload);
+    const newData = data.map(e => e.id === Number(id) ? { ...e, ...payload } : e);
+    setData(newData);
+    localStorage.setItem('bookingEmployees', JSON.stringify(newData));
     message.success('Cập nhật thành công');
-    fetch();
   };
 
   const remove = async (id: number) => {
-    await api.deleteEmployee(id);
+    const newData = data.filter(e => e.id !== Number(id));
+    setData(newData);
+    localStorage.setItem('bookingEmployees', JSON.stringify(newData));
     message.success('Xóa thành công');
-    fetch();
   };
 
   return { data, loading, fetch, add, update, remove };
