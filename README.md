@@ -34,3 +34,10 @@ yarn start
 ```bash
 yarn build
 ```
+
+## Diploma Management System
+
+### Features included:
+- So Van Bang Management
+- Quyet Dinh Management
+- Thong Tin Van Bang & Tra Cuu
