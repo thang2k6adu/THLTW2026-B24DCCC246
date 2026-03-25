@@ -8,7 +8,7 @@ export default () => {
   const fetchDanhSach = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await getBieuMauList();
+      const res: any = await getBieuMauList();
       setDanhSach(res?.data?.data || res?.data || []);
     } catch (error) {
       console.error(error);
@@ -19,31 +19,40 @@ export default () => {
 
   const add = async (payload: any) => {
     try {
-      await createBieuMau(payload);
-      fetchDanhSach();
-      return true;
-    } catch (error) {
-      return false;
+      const res: any = await createBieuMau(payload);
+      if (res?.data?.success) {
+        fetchDanhSach();
+        return { success: true, message: undefined };
+      }
+      return { success: false, message: res?.data?.message };
+    } catch (error: any) {
+      return { success: false, message: error.message };
     }
   };
 
   const update = async (id: string, payload: any) => {
     try {
-      await updateBieuMau(id, payload);
-      fetchDanhSach();
-      return true;
-    } catch (error) {
-      return false;
+      const res: any = await updateBieuMau(id, payload);
+      if (res?.data?.success) {
+        fetchDanhSach();
+        return { success: true, message: undefined };
+      }
+      return { success: false, message: res?.data?.message };
+    } catch (error: any) {
+      return { success: false, message: error.message };
     }
   };
 
   const remove = async (id: string) => {
     try {
-      await deleteBieuMau(id);
-      fetchDanhSach();
-      return true;
-    } catch (error) {
-      return false;
+      const res: any = await deleteBieuMau(id);
+      if (res?.data?.success) {
+        fetchDanhSach();
+        return { success: true, message: undefined };
+      }
+      return { success: false, message: res?.data?.message };
+    } catch (error: any) {
+      return { success: false, message: error.message };
     }
   };
 

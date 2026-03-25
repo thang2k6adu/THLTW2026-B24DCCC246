@@ -29,25 +29,25 @@ const BieuMauPage = () => {
   const handleOk = async () => {
     try {
       const values = await form.validateFields();
-      let success = false;
+      let res;
       if (editingId) {
-        success = await update(editingId, values);
-        if (success) message.success('Cập nhật thành công');
+        res = await update(editingId, values);
+        if (res.success) message.success('Cập nhật thành công');
       } else {
-        success = await add(values);
-        if (success) message.success('Thêm mới thành công');
+        res = await add(values);
+        if (res.success) message.success('Thêm mới thành công');
       }
-      if (success) setIsModalVisible(false);
-      else message.error('Có lỗi xảy ra');
+      if (res.success) setIsModalVisible(false);
+      else message.error(res.message || 'Có lỗi xảy ra');
     } catch (info) {
       console.log('Validate Failed:', info);
     }
   };
 
   const handleDelete = async (id: string) => {
-    const success = await remove(id);
-    if (success) message.success('Xóa thành công');
-    else message.error('Xóa thất bại');
+    const res = await remove(id);
+    if (res.success) message.success('Xóa thành công');
+    else message.error(res.message || 'Xóa thất bại');
   };
 
   const columns = [

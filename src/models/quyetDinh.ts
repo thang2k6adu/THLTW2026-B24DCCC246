@@ -8,7 +8,7 @@ export default () => {
   const fetchDanhSach = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await getQuyetDinhList();
+      const res: any = await getQuyetDinhList();
       setDanhSach(res?.data?.data || res?.data || []);
     } catch (error) {
       console.error(error);
@@ -19,31 +19,40 @@ export default () => {
 
   const add = async (payload: any) => {
     try {
-      await createQuyetDinh(payload);
-      fetchDanhSach();
-      return true;
-    } catch (error) {
-      return false;
+      const res: any = await createQuyetDinh(payload);
+      if (res?.data?.success) {
+        fetchDanhSach();
+        return { success: true, message: undefined };
+      }
+      return { success: false, message: res?.data?.message };
+    } catch (error: any) {
+      return { success: false, message: error.message };
     }
   };
 
   const update = async (id: string, payload: any) => {
     try {
-      await updateQuyetDinh(id, payload);
-      fetchDanhSach();
-      return true;
-    } catch (error) {
-      return false;
+      const res: any = await updateQuyetDinh(id, payload);
+      if (res?.data?.success) {
+        fetchDanhSach();
+        return { success: true, message: undefined };
+      }
+      return { success: false, message: res?.data?.message };
+    } catch (error: any) {
+      return { success: false, message: error.message };
     }
   };
 
   const remove = async (id: string) => {
     try {
-      await deleteQuyetDinh(id);
-      fetchDanhSach();
-      return true;
-    } catch (error) {
-      return false;
+      const res: any = await deleteQuyetDinh(id);
+      if (res?.data?.success) {
+        fetchDanhSach();
+        return { success: true, message: undefined };
+      }
+      return { success: false, message: res?.data?.message };
+    } catch (error: any) {
+      return { success: false, message: error.message };
     }
   };
 

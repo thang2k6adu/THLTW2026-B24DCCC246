@@ -9,7 +9,7 @@ export default () => {
   const fetchDanhSach = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await getVanBangList();
+      const res: any = await getVanBangList();
       setDanhSach(res?.data?.data || res?.data || []);
     } catch (error) {
       console.error(error);
@@ -21,7 +21,7 @@ export default () => {
   const traCuu = async (params: any) => {
     setLoading(true);
     try {
-      const res = await traCuuVanBang(params);
+      const res: any = await traCuuVanBang(params);
       if (res?.data?.success) {
         setKetQuaTraCuu(res?.data?.data || []);
         return true;
@@ -37,31 +37,40 @@ export default () => {
 
   const add = async (payload: any) => {
     try {
-      await createVanBang(payload);
-      fetchDanhSach();
-      return true;
+      const res: any = await createVanBang(payload);
+      if (res?.data?.success) {
+        fetchDanhSach();
+        return { success: true, message: undefined };
+      }
+      return { success: false, message: res?.data?.message };
     } catch (error) {
-      return false;
+      return { success: false };
     }
   };
 
   const update = async (id: string, payload: any) => {
     try {
-      await updateVanBang(id, payload);
-      fetchDanhSach();
-      return true;
+      const res: any = await updateVanBang(id, payload);
+      if (res?.data?.success) {
+        fetchDanhSach();
+        return { success: true, message: undefined };
+      }
+      return { success: false, message: res?.data?.message };
     } catch (error) {
-      return false;
+      return { success: false };
     }
   };
 
   const remove = async (id: string) => {
     try {
-      await deleteVanBang(id);
-      fetchDanhSach();
-      return true;
+      const res: any = await deleteVanBang(id);
+      if (res?.data?.success) {
+        fetchDanhSach();
+        return { success: true, message: undefined };
+      }
+      return { success: false, message: res?.data?.message };
     } catch (error) {
-      return false;
+      return { success: false };
     }
   };
 

@@ -8,7 +8,7 @@ export default () => {
   const fetchDanhSach = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await getSoVanBangList();
+      const res: any = await getSoVanBangList();
       setDanhSach(res?.data?.data || res?.data || []);
     } catch (error) {
       console.error(error);
@@ -19,31 +19,40 @@ export default () => {
 
   const add = async (payload: any) => {
     try {
-      await createSoVanBang(payload);
-      fetchDanhSach();
-      return true;
+      const res: any = await createSoVanBang(payload);
+      if (res?.data?.success) {
+        fetchDanhSach();
+        return { success: true, message: undefined };
+      }
+      return { success: false, message: res?.data?.message };
     } catch (error) {
-      return false;
+      return { success: false };
     }
   };
 
   const update = async (id: string, payload: any) => {
     try {
-      await updateSoVanBang(id, payload);
-      fetchDanhSach();
-      return true;
+      const res: any = await updateSoVanBang(id, payload);
+      if (res?.data?.success) {
+        fetchDanhSach();
+        return { success: true, message: undefined };
+      }
+      return { success: false, message: res?.data?.message };
     } catch (error) {
-      return false;
+      return { success: false };
     }
   };
 
   const remove = async (id: string) => {
     try {
-      await deleteSoVanBang(id);
-      fetchDanhSach();
-      return true;
+      const res: any = await deleteSoVanBang(id);
+      if (res?.data?.success) {
+        fetchDanhSach();
+        return { success: true, message: undefined };
+      }
+      return { success: false, message: res?.data?.message };
     } catch (error) {
-      return false;
+      return { success: false };
     }
   };
 

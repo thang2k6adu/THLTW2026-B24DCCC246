@@ -9,6 +9,11 @@ export async function getSoVanBangList() {
 
 export async function createSoVanBang(payload: any) {
   const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  
+  if (data.some((so: any) => so.nam == payload.nam)) {
+    return { data: { success: false, message: `Năm ${payload.nam} đã tồn tại sổ văn bằng!` } };
+  }
+
   const newSo = { id: generateId(), ...payload, soVaoSoHienTai: 1 };
   data.push(newSo);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
@@ -17,6 +22,11 @@ export async function createSoVanBang(payload: any) {
 
 export async function updateSoVanBang(id: string, payload: any) {
   let data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  
+  if (data.some((so: any) => so.nam == payload.nam && so.id !== id)) {
+    return { data: { success: false, message: `Năm ${payload.nam} đã tồn tại sổ văn bằng!` } };
+  }
+
   data = data.map((so: any) => (so.id === id ? { ...so, ...payload } : so));
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   return { data: { success: true } };
