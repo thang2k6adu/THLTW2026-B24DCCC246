@@ -1,4 +1,4 @@
-﻿export default [
+export default [
 	{
 		path: '/user',
 		layout: false,
@@ -56,6 +56,35 @@
 	// 		},
 	// 	],
 	// },
+
+	{
+		name: 'Câu Lạc Bộ',
+		path: '/cau-lac-bo',
+		icon: 'team',
+		routes: [
+			{
+				name: 'Danh sách CLB',
+				path: 'danh-sach',
+				component: './CauLacBo/DanhSach',
+			},
+			{
+				name: 'Đơn đăng ký',
+				path: 'don-dang-ky',
+				component: './CauLacBo/DonDangKy',
+			},
+			{
+				name: 'Thành viên',
+				path: 'thanh-vien',
+				component: './CauLacBo/ThanhVien',
+			},
+			{
+				name: 'Báo cáo',
+				path: 'bao-cao',
+				component: './CauLacBo/BaoCao',
+			},
+		],
+	},
+
 
 	{
 		path: '/notification',
