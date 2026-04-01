@@ -4,7 +4,7 @@ import { Table, Card, Button, Space, Tag, Popconfirm, Modal, Form, Input, Select
 import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
 
 const RegistrationList = () => {
-  const { registrations, loading, fetchRegistrations, addRegistration, updateRegistration, deleteRegistration } = useModel('registration');
+  const { registrations, loading, fetchRegistrations, addRegistration, updateRegistration, deleteRegistration, updateStatus } = useModel('registration');
   const { clubs, fetchClubs } = useModel('club');
   
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -31,7 +31,7 @@ const RegistrationList = () => {
       title: 'Câu lạc bộ', 
       dataIndex: 'clubId', 
       key: 'clubId',
-      render: (clubId: string) => clubs.find(c => c.id === clubId)?.name || clubId
+      render: (clubId: string) => clubs.find((c: any) => c.id === clubId)?.name || clubId
     },
     {
       title: 'Trạng thái',
@@ -120,7 +120,7 @@ const RegistrationList = () => {
           <Form.Item name="gender" label="Giới tính"><Select options={[{ label: 'Nam', value: 'Nam' }, { label: 'Nữ', value: 'Nữ' }, { label: 'Khác', value: 'Khác' }]} /></Form.Item>
           <Form.Item name="address" label="Địa chỉ"><Input /></Form.Item>
           <Form.Item name="strengths" label="Sở trường"><Input.TextArea /></Form.Item>
-          <Form.Item name="clubId" label="Câu lạc bộ đăng ký" rules={[{ required: true }]}><Select options={clubs.map(c => ({ label: c.name, value: c.id }))} /></Form.Item>
+          <Form.Item name="clubId" label="Câu lạc bộ đăng ký" rules={[{ required: true }]}><Select options={clubs.map((c: any) => ({ label: c.name, value: c.id }))} /></Form.Item>
           <Form.Item name="reason" label="Lý do đăng ký"><Input.TextArea /></Form.Item>
         </Form>
       </Modal>
