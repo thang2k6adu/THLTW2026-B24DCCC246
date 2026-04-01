@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useModel, useLocation } from 'umi';
-import { Table, Card, Select } from 'antd';
+import { Table, Card, Select, Button, Modal } from 'antd';
 
 const ClubMembers = () => {
   const { registrations, loading, fetchRegistrations, changeClub } = useModel('registration');
@@ -8,6 +8,9 @@ const ClubMembers = () => {
   
   const location = useLocation();
   const [selectedClubId, setSelectedClubId] = useState<string | undefined>(undefined);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [isTransferModalVisible, setIsTransferModalVisible] = useState(false);
+  const [targetClubId, setTargetClubId] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     fetchRegistrations();
@@ -32,6 +35,21 @@ const ClubMembers = () => {
     return members;
   }, [registrations, selectedClubId]);
 
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: (newSelectedRowKeys: React.Key[]) => {
+      setSelectedRowKeys(newSelectedRowKeys);
+    },
+  };
+
+  const handleTransfer = async () => {
+    if (!targetClubId) return;
+    await changeClub(selectedRowKeys as string[], targetClubId);
+    setIsTransferModalVisible(false);
+    setSelectedRowKeys([]);
+    setTargetClubId(undefined);
+  };
+
   const columns = [
     { title: 'Họ tên', dataIndex: 'candidateName', key: 'candidateName' },
     { title: 'Email', dataIndex: 'email', key: 'email' },
@@ -46,25 +64,53 @@ const ClubMembers = () => {
   ];
 
   return (
-    <Card title="Quản lý thành viên câu lạc bộ">
-      <div style={{ marginBottom: 16 }}>
-        <span style={{ marginRight: 8 }}>Lọc theo câu lạc bộ:</span>
+    <>
+      <Card title="Quản lý thành viên câu lạc bộ">
+        <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
+          <div>
+            <span style={{ marginRight: 8 }}>Lọc theo câu lạc bộ:</span>
+            <Select 
+              style={{ width: 300 }} 
+              allowClear 
+              value={selectedClubId}
+              placeholder="Tất cả câu lạc bộ" 
+              onChange={setSelectedClubId}
+              options={clubs.map((c: any) => ({ label: c.name, value: c.id }))}
+            />
+          </div>
+          {selectedRowKeys.length > 0 && (
+            <Button type="primary" onClick={() => setIsTransferModalVisible(true)}>
+              Đổi câu lạc bộ cho {selectedRowKeys.length} thành viên
+            </Button>
+          )}
+        </div>
+        <Table 
+          rowSelection={rowSelection}
+          columns={columns}
+          dataSource={approvedMembers} 
+          rowKey="id" 
+          loading={loading}
+        />
+      </Card>
+
+      <Modal
+        title={`Chuyển CLB cho ${selectedRowKeys.length} thành viên`}
+        visible={isTransferModalVisible}
+        onOk={handleTransfer}
+        onCancel={() => setIsTransferModalVisible(false)}
+        okButtonProps={{ disabled: !targetClubId }}
+        destroyOnClose
+      >
+        <p>Chọn câu lạc bộ muốn chuyển đến:</p>
         <Select 
-          style={{ width: 300 }} 
-          allowClear 
-          value={selectedClubId}
-          placeholder="Tất cả câu lạc bộ" 
-          onChange={setSelectedClubId}
+          style={{ width: '100%' }} 
+          placeholder="Chọn câu lạc bộ" 
+          value={targetClubId}
+          onChange={setTargetClubId}
           options={clubs.map((c: any) => ({ label: c.name, value: c.id }))}
         />
-      </div>
-      <Table 
-        columns={columns}
-        dataSource={approvedMembers} 
-        rowKey="id" 
-        loading={loading}
-      />
-    </Card>
+      </Modal>
+    </>
   );
 };
 
