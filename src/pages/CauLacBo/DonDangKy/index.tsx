@@ -4,7 +4,7 @@ import { Table, Card, Button, Space, Tag, Popconfirm, Modal, Form, Input, Select
 import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
 
 const RegistrationList = () => {
-  const { registrations, loading, fetchRegistrations, addRegistration, updateRegistration, deleteRegistration, updateStatus } = useModel('registration');
+  const { registrations, loading, fetchRegistrations, addRegistration, updateRegistration, deleteRegistration, updateStatus, batchUpdateStatus } = useModel('registration');
   const { clubs, fetchClubs } = useModel('club');
   
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -14,6 +14,9 @@ const RegistrationList = () => {
   const [statusModalVisible, setStatusModalVisible] = useState(false);
   const [actionType, setActionType] = useState<'Approved' | 'Rejected'>('Approved');
   const [selectedReg, setSelectedReg] = useState<any>(null);
+  
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [isBatchAction, setIsBatchAction] = useState(false);
 
   const [form] = Form.useForm();
 
@@ -21,6 +24,16 @@ const RegistrationList = () => {
     fetchRegistrations();
     fetchClubs();
   }, [fetchRegistrations, fetchClubs]);
+
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: (newSelectedRowKeys: React.Key[]) => {
+      setSelectedRowKeys(newSelectedRowKeys);
+    },
+    getCheckboxProps: (record: any) => ({
+      disabled: record.status !== 'Pending',
+    }),
+  };
 
   const columns = [
     { title: 'Họ tên', dataIndex: 'candidateName', key: 'candidateName' },
@@ -57,12 +70,14 @@ const RegistrationList = () => {
             <>
               <Button type="primary" size="small" style={{ backgroundColor: '#52c41a', borderColor: '#52c41a' }} onClick={() => {
                 setSelectedReg(record);
+                setIsBatchAction(false);
                 setActionType('Approved');
                 form.setFieldsValue({ reasonNote: '' });
                 setStatusModalVisible(true);
               }}>Duyệt</Button>
               <Button type="primary" danger size="small" onClick={() => {
                 setSelectedReg(record);
+                setIsBatchAction(false);
                 setActionType('Rejected');
                 form.setFieldsValue({ reasonNote: '' });
                 setStatusModalVisible(true);
@@ -109,7 +124,30 @@ const RegistrationList = () => {
         form.resetFields();
         setIsModalVisible(true);
       }}>Thêm mới</Button>}>
-        <Table dataSource={registrations} columns={columns} rowKey="id" loading={loading} />
+        {selectedRowKeys.length > 0 && (
+          <div style={{ marginBottom: 16 }}>
+            <Space>
+              <span>Đã chọn {selectedRowKeys.length} đơn</span>
+              <Button type="primary" style={{ backgroundColor: '#52c41a', borderColor: '#52c41a' }} onClick={() => {
+                setIsBatchAction(true);
+                setActionType('Approved');
+                form.setFieldsValue({ reasonNote: '' });
+                setStatusModalVisible(true);
+              }}>
+                Duyệt {selectedRowKeys.length} đơn đã chọn
+              </Button>
+              <Button type="primary" danger onClick={() => {
+                setIsBatchAction(true);
+                setActionType('Rejected');
+                form.setFieldsValue({ reasonNote: '' });
+                setStatusModalVisible(true);
+              }}>
+                Từ chối {selectedRowKeys.length} đơn đã chọn
+              </Button>
+            </Space>
+          </div>
+        )}
+        <Table rowSelection={rowSelection} dataSource={registrations} columns={columns} rowKey="id" loading={loading} />
       </Card>
       
       <Modal title={isViewMode ? 'Chi tiết đơn đăng ký' : editingReg ? 'Sửa đơn' : 'Thêm đơn mới'} visible={isModalVisible} onOk={handleSubmit} onCancel={() => setIsModalVisible(false)} destroyOnClose>
@@ -131,7 +169,12 @@ const RegistrationList = () => {
         onOk={async () => {
           try {
             const values = await form.validateFields(['reasonNote']);
-            await updateStatus(selectedReg.id, actionType, values.reasonNote || '');
+            if (isBatchAction) {
+              await batchUpdateStatus(selectedRowKeys as string[], actionType, values.reasonNote || '');
+              setSelectedRowKeys([]);
+            } else {
+              await updateStatus(selectedReg.id, actionType, values.reasonNote || '');
+            }
             setStatusModalVisible(false);
             form.resetFields(['reasonNote']);
           } catch (e) {}
