@@ -55,12 +55,15 @@ const ClubMembers = () => {
     { title: 'Email', dataIndex: 'email', key: 'email' },
     { title: 'Số điện thoại', dataIndex: 'phone', key: 'phone' },
     { title: 'Giới tính', dataIndex: 'gender', key: 'gender' },
+    { title: 'Địa chỉ', dataIndex: 'address', key: 'address', ellipsis: true },
+    { title: 'Sở trường', dataIndex: 'strengths', key: 'strengths', ellipsis: true },
     { 
       title: 'Câu lạc bộ hiện tại', 
       dataIndex: 'clubId', 
       key: 'clubId',
       render: (id: string) => clubs.find((c: any) => c.id === id)?.name || id
-    }
+    },
+    { title: 'Lý do đăng ký', dataIndex: 'reason', key: 'reason', ellipsis: true }
   ];
 
   return (

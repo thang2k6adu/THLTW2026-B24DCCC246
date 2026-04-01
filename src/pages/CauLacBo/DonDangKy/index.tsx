@@ -42,12 +42,15 @@ const RegistrationList = () => {
     { title: 'Email', dataIndex: 'email', key: 'email' },
     { title: 'SĐT', dataIndex: 'phone', key: 'phone' },
     { title: 'Giới tính', dataIndex: 'gender', key: 'gender' },
+    { title: 'Địa chỉ', dataIndex: 'address', key: 'address', ellipsis: true },
+    { title: 'Sở trường', dataIndex: 'strengths', key: 'strengths', ellipsis: true },
     { 
       title: 'Câu lạc bộ', 
       dataIndex: 'clubId', 
       key: 'clubId',
       render: (clubId: string) => clubs.find((c: any) => c.id === clubId)?.name || clubId
     },
+    { title: 'Lý do đăng ký', dataIndex: 'reason', key: 'reason', ellipsis: true },
     {
       title: 'Trạng thái',
       dataIndex: 'status',
@@ -57,6 +60,7 @@ const RegistrationList = () => {
         return <Tag color={color}>{status}</Tag>;
       }
     },
+    { title: 'Ghi chú', dataIndex: 'notes', key: 'notes', ellipsis: true },
     {
       title: 'Thao tác',
       key: 'actions',
