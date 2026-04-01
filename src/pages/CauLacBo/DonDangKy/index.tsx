@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useModel } from 'umi';
-import { Table, Card, Button, Space, Tag, Popconfirm, Modal, Form, Input, Select } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
+import { Table, Card, Button, Space, Tag, Popconfirm, Modal, Form, Input, Select, Timeline } from 'antd';
+import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, HistoryOutlined } from '@ant-design/icons';
+import moment from 'moment';
 
 const RegistrationList = () => {
   const { registrations, loading, fetchRegistrations, addRegistration, updateRegistration, deleteRegistration, updateStatus, batchUpdateStatus } = useModel('registration');
@@ -12,6 +13,7 @@ const RegistrationList = () => {
   const [isViewMode, setIsViewMode] = useState(false);
 
   const [statusModalVisible, setStatusModalVisible] = useState(false);
+  const [historyModalVisible, setHistoryModalVisible] = useState(false);
   const [actionType, setActionType] = useState<'Approved' | 'Rejected'>('Approved');
   const [selectedReg, setSelectedReg] = useState<any>(null);
   
@@ -93,6 +95,10 @@ const RegistrationList = () => {
           <Popconfirm title="Xóa đơn này?" onConfirm={() => deleteRegistration(record.id)}>
             <Button icon={<DeleteOutlined />} type="primary" danger size="small">Xóa</Button>
           </Popconfirm>
+          <Button icon={<HistoryOutlined />} size="small" onClick={() => {
+            setSelectedReg(record);
+            setHistoryModalVisible(true);
+          }}>Lịch sử</Button>
         </Space>
       )
     }
@@ -191,6 +197,23 @@ const RegistrationList = () => {
             <Input.TextArea rows={3} />
           </Form.Item>
         </Form>
+      </Modal>
+
+      <Modal 
+        title={`Lịch sử thao tác - ${selectedReg?.candidateName}`} 
+        visible={historyModalVisible} 
+        footer={null} 
+        onCancel={() => setHistoryModalVisible(false)}
+      >
+        <Timeline>
+          {selectedReg?.history?.map((h: any, i: number) => (
+            <Timeline.Item key={i} color={h.action.includes('Duyệt') ? 'green' : h.action.includes('Từ chối') ? 'red' : 'blue'}>
+              <p><strong>{h.action}</strong> - {moment(h.timestamp).format('HH:mm DD/MM/YYYY')}</p>
+              <p>Người thực hiện: {h.actor}</p>
+              {h.note && <p>Ghi chú: {h.note}</p>}
+            </Timeline.Item>
+          ))}
+        </Timeline>
       </Modal>
     </>
   );
