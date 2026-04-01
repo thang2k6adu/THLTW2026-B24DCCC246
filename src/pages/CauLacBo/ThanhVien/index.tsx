@@ -32,6 +32,19 @@ const ClubMembers = () => {
     return members;
   }, [registrations, selectedClubId]);
 
+  const columns = [
+    { title: 'Họ tên', dataIndex: 'candidateName', key: 'candidateName' },
+    { title: 'Email', dataIndex: 'email', key: 'email' },
+    { title: 'Số điện thoại', dataIndex: 'phone', key: 'phone' },
+    { title: 'Giới tính', dataIndex: 'gender', key: 'gender' },
+    { 
+      title: 'Câu lạc bộ hiện tại', 
+      dataIndex: 'clubId', 
+      key: 'clubId',
+      render: (id: string) => clubs.find((c: any) => c.id === id)?.name || id
+    }
+  ];
+
   return (
     <Card title="Quản lý thành viên câu lạc bộ">
       <div style={{ marginBottom: 16 }}>
@@ -46,6 +59,7 @@ const ClubMembers = () => {
         />
       </div>
       <Table 
+        columns={columns}
         dataSource={approvedMembers} 
         rowKey="id" 
         loading={loading}
