@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 import { useModel } from 'umi';
+import { Card, Row, Col, Statistic } from 'antd';
+import Chart from 'react-apexcharts';
 
 const ReportDashboard = () => {
   const { clubs, fetchClubs } = useModel('club');
@@ -41,9 +43,46 @@ const ReportDashboard = () => {
     };
   }, [clubs, registrations]);
 
+  const chartOptions: any = {
+    chart: { type: 'bar', height: 400, toolbar: { show: false } },
+    plotOptions: { bar: { horizontal: false, columnWidth: '55%', borderRadius: 4 } },
+    dataLabels: { enabled: false },
+    stroke: { show: true, width: 2, colors: ['transparent'] },
+    xaxis: { categories: chartData.categories },
+    yaxis: { title: { text: 'Số lượng đơn' } },
+    fill: { opacity: 1 },
+    colors: ['#faad14', '#52c41a', '#ff4d4f'],
+    tooltip: { y: { formatter: (val: number) => val + ' đơn' } }
+  };
+
   return (
-    <div style={{ display: 'none' }}>
-      {stats.totalClubs} {chartData.categories.length}
+    <div style={{ padding: 24 }}>
+      <Row gutter={[16, 16]}>
+        <Col span={6}>
+          <Card>
+            <Statistic title="Tổng số CLB" value={stats.totalClubs} />
+          </Card>
+        </Col>
+        <Col span={6}>
+          <Card>
+            <Statistic title="Đơn chờ duyệt" value={stats.pending} valueStyle={{ color: '#faad14' }} />
+          </Card>
+        </Col>
+        <Col span={6}>
+          <Card>
+            <Statistic title="Từ chối" value={stats.rejected} valueStyle={{ color: '#ff4d4f' }} />
+          </Card>
+        </Col>
+        <Col span={6}>
+          <Card>
+            <Statistic title="Đã duyệt" value={stats.approved} valueStyle={{ color: '#52c41a' }} />
+          </Card>
+        </Col>
+      </Row>
+
+      <Card title="Thống kê đơn đăng ký theo câu lạc bộ" style={{ marginTop: 24 }}>
+        <Chart options={chartOptions} series={chartData.series} type="bar" height={400} />
+      </Card>
     </div>
   );
 };
