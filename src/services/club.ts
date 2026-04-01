@@ -30,6 +30,24 @@ const defaultClubs: IClub[] = [
     description: '<p>Nơi giao lưu âm nhạc và các bộ môn nghệ thuật</p>',
     president: 'Trần Thị B',
     isActive: true,
+  },
+  {
+    id: '3',
+    avatar: 'https://api.dicebear.com/7.x/identicon/svg?seed=English',
+    name: 'Câu lạc bộ Tiếng Anh',
+    establishedDate: '2019-10-10',
+    description: '<p>Cải thiện kỹ năng ngoại ngữ, giao lưu văn hóa quốc tế</p>',
+    president: 'Lê Hoàng C',
+    isActive: true,
+  },
+  {
+    id: '4',
+    avatar: 'https://api.dicebear.com/7.x/identicon/svg?seed=Sport',
+    name: 'Câu lạc bộ Thể thao',
+    establishedDate: '2022-09-05',
+    description: '<p>Rèn luyện thể dục thể thao, bóng đá, bóng chuyền, tổ chức giải đấu</p>',
+    president: 'Phạm Đức D',
+    isActive: false,
   }
 ];
 
