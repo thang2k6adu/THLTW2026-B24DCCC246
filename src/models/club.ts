@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
-import { getClubs, saveClubs, IClub } from '@/services/club';
+import { getClubs, saveClubs } from '@/services/club';
+import type { IClub } from '@/services/club';
 import { message } from 'antd';
 
 export default () => {

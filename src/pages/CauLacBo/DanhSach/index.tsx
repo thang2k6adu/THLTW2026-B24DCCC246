@@ -1,10 +1,14 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useModel, history } from 'umi';
-import { Table, Card, Button, Avatar, Space, Tag, Popconfirm } from 'antd';
+import { Table, Card, Button, Avatar, Space, Tag, Popconfirm, Modal, Form, Input, Switch, DatePicker } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, TeamOutlined } from '@ant-design/icons';
+import moment from 'moment';
 
 const ClubList = () => {
-  const { clubs, loading, fetchClubs, deleteClub } = useModel('club');
+  const { clubs, loading, fetchClubs, addClub, updateClub, deleteClub } = useModel('club');
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [editingClub, setEditingClub] = useState<any>(null);
+  const [form] = Form.useForm();
 
   useEffect(() => {
     fetchClubs();
@@ -22,6 +26,8 @@ const ClubList = () => {
       dataIndex: 'name',
       key: 'name',
       sorter: (a: any, b: any) => a.name.localeCompare(b.name),
+      // added simple text search placeholder if we need filtering logic later, 
+      // but standard antd table filter setup can be done if required.
     },
     {
       title: 'Ngày thành lập',
@@ -60,7 +66,19 @@ const ClubList = () => {
       key: 'actions',
       render: (_: any, record: any) => (
         <Space>
-          <Button icon={<EditOutlined />} type="primary" size="small">Sửa</Button>
+          <Button 
+            icon={<EditOutlined />} 
+            type="primary" 
+            size="small"
+            onClick={() => {
+              setEditingClub(record);
+              form.setFieldsValue({
+                ...record,
+                establishedDate: record.establishedDate ? moment(record.establishedDate) : null
+              });
+              setIsModalVisible(true);
+            }}
+          >Sửa</Button>
           <Popconfirm title="Bạn có chắc chắn muốn xóa?" onConfirm={() => deleteClub(record.id)}>
             <Button icon={<DeleteOutlined />} type="primary" danger size="small">Xóa</Button>
           </Popconfirm>
@@ -70,18 +88,75 @@ const ClubList = () => {
     }
   ];
 
+  const handleModalSubmit = async () => {
+    try {
+      const values = await form.validateFields();
+      const payload = {
+        ...values,
+        id: editingClub?.id || Math.random().toString(36).substr(2, 9),
+        establishedDate: values.establishedDate ? values.establishedDate.format('YYYY-MM-DD') : '',
+      };
+      
+      if (editingClub) {
+        await updateClub(editingClub.id, payload);
+      } else {
+        await addClub(payload);
+      }
+      setIsModalVisible(false);
+      form.resetFields();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
-    <Card 
-      title="Danh sách câu lạc bộ" 
-      extra={<Button type="primary" icon={<PlusOutlined />}>Thêm mới</Button>}
-    >
-      <Table 
-        dataSource={clubs}
-        columns={columns}
-        rowKey="id"
-        loading={loading}
-      />
-    </Card>
+    <>
+      <Card 
+        title="Danh sách câu lạc bộ" 
+        extra={<Button type="primary" icon={<PlusOutlined />} onClick={() => {
+          setEditingClub(null);
+          form.resetFields();
+          form.setFieldsValue({ isActive: true });
+          setIsModalVisible(true);
+        }}>Thêm mới</Button>}
+      >
+        <Table 
+          dataSource={clubs}
+          columns={columns}
+          rowKey="id"
+          loading={loading}
+        />
+      </Card>
+
+      <Modal
+        title={editingClub ? 'Sửa câu lạc bộ' : 'Thêm mới câu lạc bộ'}
+        visible={isModalVisible}
+        onOk={handleModalSubmit}
+        onCancel={() => setIsModalVisible(false)}
+        destroyOnClose
+      >
+        <Form form={form} layout="vertical">
+          <Form.Item name="name" label="Tên câu lạc bộ" rules={[{ required: true, message: 'Vui lòng nhập tên' }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="avatar" label="URL Ảnh đại diện" rules={[{ required: true, message: 'Vui lòng nhập URL ảnh' }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="president" label="Chủ nhiệm" rules={[{ required: true, message: 'Vui lòng nhập tên chủ nhiệm' }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="establishedDate" label="Ngày thành lập" rules={[{ required: true }]}>
+            <DatePicker style={{ width: '100%' }} format="YYYY-MM-DD" />
+          </Form.Item>
+          <Form.Item name="description" label="Mô tả (HTML)">
+            <Input.TextArea rows={4} />
+          </Form.Item>
+          <Form.Item name="isActive" label="Hoạt động" valuePropName="checked">
+            <Switch />
+          </Form.Item>
+        </Form>
+      </Modal>
+    </>
   );
 };
 
