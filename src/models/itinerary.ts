@@ -1,5 +1,5 @@
-import { useState, useCallback, useMemo } from 'react';
-import { saveItinerary } from '@/services/itinerary';
+import { useState, useCallback, useMemo, useEffect } from 'react';
+import { message } from 'antd';
 
 export interface IDayPlan {
   day: number;
@@ -7,9 +7,31 @@ export interface IDayPlan {
 }
 
 export default () => {
-  const [days, setDays] = useState<IDayPlan[]>([{ day: 1, destinations: [] }]);
-  const [totalBudgetLimit, setTotalBudgetLimit] = useState<number>(10000000);
+  const [days, setDays] = useState<IDayPlan[]>(() => {
+    const stored = localStorage.getItem('travel_itinerary_days');
+    if (stored) {
+      try {
+        return JSON.parse(stored);
+      } catch (e) {}
+    }
+    return [{ day: 1, destinations: [] }];
+  });
+
+  const [totalBudgetLimit, setTotalBudgetLimit] = useState<number>(() => {
+    const stored = localStorage.getItem('travel_itinerary_budget');
+    if (stored) return Number(stored);
+    return 10000000;
+  });
+
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem('travel_itinerary_days', JSON.stringify(days));
+  }, [days]);
+
+  useEffect(() => {
+    localStorage.setItem('travel_itinerary_budget', totalBudgetLimit.toString());
+  }, [totalBudgetLimit]);
 
   const addDay = useCallback(() => {
     setDays((prev) => [...prev, { day: prev.length + 1, destinations: [] }]);
@@ -91,14 +113,15 @@ export default () => {
   const save = useCallback(async () => {
     setSaving(true);
     try {
-      await saveItinerary({ days, summary });
-      setDays([{ day: 1, destinations: [] }]);
+      localStorage.setItem('travel_itinerary_days', JSON.stringify(days));
+      message.success('Lịch trình của bạn đã được đối chiếu & sao lưu thành công!');
     } catch (e) {
       console.error(e);
+      message.error('Có lỗi xảy ra khi lưu trữ!');
     } finally {
       setSaving(false);
     }
-  }, [days, summary]);
+  }, [days]);
 
   return {
     days,
