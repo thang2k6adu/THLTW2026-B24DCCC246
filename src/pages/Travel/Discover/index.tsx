@@ -25,7 +25,7 @@ const Discover = () => {
 
   return (
     <div style={{ padding: 24, minHeight: '100vh' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 16 }}>
         <Title level={2} style={{ margin: 0 }}>Khám phá điểm đến</Title>
         <Space wrap>
           <Select
@@ -55,7 +55,7 @@ const Discover = () => {
       
       <Spin spinning={loading}>
         <Row gutter={[24, 24]}>
-          {destinations.map((item) => (
+          {destinations.map((item: any) => (
             <Col xs={24} sm={12} md={8} lg={6} key={item.id}>
               <Card
                 hoverable

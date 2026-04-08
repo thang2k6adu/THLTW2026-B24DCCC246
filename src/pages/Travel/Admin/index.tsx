@@ -105,28 +105,28 @@ const Admin = () => {
 
   return (
     <div style={{ padding: 24, minHeight: '100vh' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 16 }}>
         <Title level={2} style={{ margin: 0 }}>Quản trị điểm đến</Title>
         <Button type="primary" icon={<PlusOutlined />} onClick={() => openDrawer()}>Thêm điểm đến</Button>
       </div>
 
-      <Row gutter={16} style={{ marginBottom: 24 }}>
-        <Col span={6}>
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+        <Col xs={24} sm={12} md={6}>
           <Card>
             <Statistic title="Tổng số điểm đến" value={destinations.length} />
           </Card>
         </Col>
-        <Col span={6}>
+        <Col xs={24} sm={12} md={6}>
           <Card>
             <Statistic title="Điểm đến phổ biến nhất" value="Phố cổ Hội An" />
           </Card>
         </Col>
-        <Col span={6}>
+        <Col xs={24} sm={12} md={6}>
           <Card>
             <Statistic title="Lượt tạo lịch trình tháng này" value={142} />
           </Card>
         </Col>
-        <Col span={6}>
+        <Col xs={24} sm={12} md={6}>
           <Card>
             <Statistic title="Doanh thu dự kiến" value={15200000} suffix="VNĐ" />
           </Card>
