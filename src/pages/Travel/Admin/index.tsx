@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useModel } from 'umi';
-import { Card, Typography, Table, Button, Space, Popconfirm, Tag, Drawer, Form, Input, InputNumber, Select, message } from 'antd';
+import { Card, Typography, Table, Button, Space, Popconfirm, Tag, Drawer, Form, Input, InputNumber, Select, message, Row, Col, Statistic } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined } from '@ant-design/icons';
 
 const { Title } = Typography;
@@ -110,6 +110,29 @@ const Admin = () => {
         <Button type="primary" icon={<PlusOutlined />} onClick={() => openDrawer()}>Thêm điểm đến</Button>
       </div>
 
+      <Row gutter={16} style={{ marginBottom: 24 }}>
+        <Col span={6}>
+          <Card>
+            <Statistic title="Tổng số điểm đến" value={destinations.length} />
+          </Card>
+        </Col>
+        <Col span={6}>
+          <Card>
+            <Statistic title="Điểm đến phổ biến nhất" value="Phố cổ Hội An" />
+          </Card>
+        </Col>
+        <Col span={6}>
+          <Card>
+            <Statistic title="Lượt tạo lịch trình tháng này" value={142} />
+          </Card>
+        </Col>
+        <Col span={6}>
+          <Card>
+            <Statistic title="Doanh thu dự kiến" value={15200000} suffix="VNĐ" />
+          </Card>
+        </Col>
+      </Row>
+
       <Card>
         <Table 
           columns={columns} 
@@ -121,7 +144,7 @@ const Admin = () => {
       </Card>
 
       <Drawer
-        title={editingId ? "Sửa điểm đến" : "Thêm điểm đến mới"}
+        title={editingId ? 'Sửa điểm đến' : 'Thêm điểm đến mới'}
         width={720}
         onClose={closeDrawer}
         visible={isDrawerVisible}
