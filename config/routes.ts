@@ -1,4 +1,4 @@
-﻿export default [
+export default [
 	{
 		path: '/user',
 		layout: false,
@@ -41,6 +41,35 @@
 		name: 'TodoList',
 		icon: 'OrderedListOutlined',
 		component: './TodoList',
+	},
+
+	// TRAVEL PLANNER ROUTES
+	{
+		path: '/travel',
+		name: 'Travel Planner',
+		icon: 'CompassOutlined',
+		routes: [
+			{
+				path: '/travel/discover',
+				name: 'Khám phá',
+				component: './Travel/Discover',
+			},
+			{
+				path: '/travel/itinerary',
+				name: 'Lịch trình',
+				component: './Travel/Itinerary',
+			},
+			{
+				path: '/travel/budget',
+				name: 'Ngân sách',
+				component: './Travel/Budget',
+			},
+			{
+				path: '/travel/admin',
+				name: 'Quản trị',
+				component: './Travel/Admin',
+			},
+		],
 	},
 
 	// DANH MUC HE THONG
