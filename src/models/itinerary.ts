@@ -49,6 +49,19 @@ export default () => {
     });
   }, []);
 
+  const moveDestinationBetweenDays = useCallback((sourceDayIdx: number, destDayIdx: number, sourceIdx: number, destIdx: number) => {
+    setDays((prev) => {
+      const newDays = [...prev];
+      const sourceClone = Array.from(newDays[sourceDayIdx].destinations);
+      const destClone = Array.from(newDays[destDayIdx].destinations);
+      const [removed] = sourceClone.splice(sourceIdx, 1);
+      destClone.splice(destIdx, 0, removed);
+      newDays[sourceDayIdx].destinations = sourceClone;
+      newDays[destDayIdx].destinations = destClone;
+      return newDays;
+    });
+  }, []);
+
   const summary = useMemo(() => {
     let totalFood = 0;
     let totalTransport = 0;
@@ -98,6 +111,7 @@ export default () => {
     addDestinationToDay,
     removeDestinationFromDay,
     reorderDestination,
+    moveDestinationBetweenDays,
     save
   };
 };
