@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useModel } from 'umi';
-import { Card, Row, Col, Typography, Button, List, Dropdown, Menu, Popconfirm } from 'antd';
+import { Card, Row, Col, Typography, Button, List, Dropdown, Menu, Popconfirm, Statistic } from 'antd';
 import { PlusOutlined, DeleteOutlined, DragOutlined } from '@ant-design/icons';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
@@ -10,7 +10,7 @@ const Itinerary = () => {
   const { destinations, fetchDestinations } = useModel('destination');
   const { 
     days, addDay, removeDay, addDestinationToDay, removeDestinationFromDay, 
-    reorderDestination, moveDestinationBetweenDays, save, saving 
+    reorderDestination, moveDestinationBetweenDays, save, saving, summary
   } = useModel('itinerary');
 
   useEffect(() => {
@@ -50,6 +50,26 @@ const Itinerary = () => {
         <Title level={2} style={{ margin: 0 }}>Lập lịch trình</Title>
         <Button type="primary" onClick={save} loading={saving}>Lưu Lịch Trình</Button>
       </Row>
+
+      <Card style={{ marginBottom: 24, background: '#fafafa' }}>
+        <Row gutter={16} align="middle">
+          <Col xs={12} sm={8} md={5}>
+            <Statistic title="Tổng ngân sách tối thiểu" value={summary.totalCost} suffix="VNĐ" valueStyle={{ color: '#cf1322' }} />
+          </Col>
+          <Col xs={12} sm={8} md={5}>
+            <Statistic title="Di chuyển" value={summary.totalTransport} suffix="VNĐ" />
+          </Col>
+          <Col xs={12} sm={8} md={5}>
+            <Statistic title="Lưu trú" value={summary.totalAcc} suffix="VNĐ" />
+          </Col>
+          <Col xs={12} sm={8} md={5}>
+            <Statistic title="Ăn uống" value={summary.totalFood} suffix="VNĐ" />
+          </Col>
+          <Col xs={12} sm={8} md={4}>
+            <Statistic title="Thời gian" value={summary.travelTime} suffix="Ngày" />
+          </Col>
+        </Row>
+      </Card>
 
       <Row gutter={24}>
         <Col xs={24} md={8}>
