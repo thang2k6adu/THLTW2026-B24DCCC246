@@ -1,16 +1,18 @@
 import React, { useEffect } from 'react';
 import { useModel } from 'umi';
-import { Card, Row, Col, Typography, Rate, Tag, Spin } from 'antd';
+import { Card, Row, Col, Typography, Rate, Tag, Spin, Select, Space } from 'antd';
 import { EnvironmentOutlined, DollarOutlined, ClockCircleOutlined } from '@ant-design/icons';
 
 const { Title, Paragraph, Text } = Typography;
 
 const Discover = () => {
   const { destinations, loading, fetchDestinations } = useModel('destination');
+  const [filterType, setFilterType] = React.useState<string>();
+  const [sortBy, setSortBy] = React.useState<string>();
 
   useEffect(() => {
-    fetchDestinations();
-  }, []);
+    fetchDestinations({ type: filterType, sortBy });
+  }, [filterType, sortBy, fetchDestinations]);
 
   const getTypeColor = (type: string) => {
     switch (type) {
@@ -22,8 +24,34 @@ const Discover = () => {
   };
 
   return (
-    <div style={{ padding: 24 }}>
-      <Title level={2}>Khám phá điểm đến</Title>
+    <div style={{ padding: 24, minHeight: '100vh' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+        <Title level={2} style={{ margin: 0 }}>Khám phá điểm đến</Title>
+        <Space wrap>
+          <Select
+            placeholder="Loại hình"
+            allowClear
+            style={{ width: 120 }}
+            onChange={(val) => setFilterType(val)}
+            options={[
+              { label: 'Biển', value: 'biển' },
+              { label: 'Núi', value: 'núi' },
+              { label: 'Thành phố', value: 'thành phố' },
+            ]}
+          />
+          <Select
+            placeholder="Sắp xếp"
+            allowClear
+            style={{ width: 160 }}
+            onChange={(val) => setSortBy(val)}
+            options={[
+              { label: 'Giá (Thấp đến cao)', value: 'price_asc' },
+              { label: 'Giá (Cao đến thấp)', value: 'price_desc' },
+              { label: 'Đánh giá cao', value: 'rating' },
+            ]}
+          />
+        </Space>
+      </div>
       
       <Spin spinning={loading}>
         <Row gutter={[24, 24]}>
