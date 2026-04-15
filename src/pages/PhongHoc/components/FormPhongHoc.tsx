@@ -68,7 +68,9 @@ const FormPhongHoc = () => {
     >
       <Form
         form={form}
-        layout="vertical"
+        layout="horizontal"
+        labelCol={{ span: 6 }}
+        wrapperCol={{ span: 18 }}
       >
         <Form.Item
           name="maPhong"
