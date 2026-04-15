@@ -40,7 +40,7 @@ const PhongHoc = () => {
       dataIndex: 'maPhong',
       key: 'maPhong',
       filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }: any) => (
-        <div style={{ padding: 8 }}>
+        <div style={{ padding: 8, minWidth: 200 }}>
           <Input
             placeholder="Tìm mã phòng"
             value={selectedKeys[0]}
@@ -48,7 +48,7 @@ const PhongHoc = () => {
             onPressEnter={() => confirm()}
             style={{ marginBottom: 8, display: 'block' }}
           />
-          <Space>
+          <Space style={{ display: 'flex', justifyContent: 'space-between' }}>
             <Button type="primary" onClick={() => confirm()} icon={<SearchOutlined />} size="small" style={{ width: 90 }}>
               Tìm
             </Button>
@@ -67,7 +67,7 @@ const PhongHoc = () => {
       dataIndex: 'tenPhong',
       key: 'tenPhong',
       filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }: any) => (
-        <div style={{ padding: 8 }}>
+        <div style={{ padding: 8, minWidth: 200 }}>
           <Input
             placeholder="Tìm tên phòng"
             value={selectedKeys[0]}
@@ -75,7 +75,7 @@ const PhongHoc = () => {
             onPressEnter={() => confirm()}
             style={{ marginBottom: 8, display: 'block' }}
           />
-          <Space>
+          <Space style={{ display: 'flex', justifyContent: 'space-between' }}>
             <Button type="primary" onClick={() => confirm()} icon={<SearchOutlined />} size="small" style={{ width: 90 }}>
               Tìm
             </Button>
