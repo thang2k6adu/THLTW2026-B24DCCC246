@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useCallback } from 'react';
 import { useModel, useIntl } from 'umi';
 import { Card, Table, Button, Space, Tag, Input, Select, Popconfirm, message } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons';
@@ -20,15 +20,15 @@ const PhongHoc = () => {
     fetchPhongHoc();
   }, [fetchPhongHoc]);
 
-  const onAddClick = () => {
+  const onAddClick = useCallback(() => {
     setEditRecord(undefined);
     setVisibleForm(true);
-  };
+  }, [setEditRecord, setVisibleForm]);
 
-  const onEditClick = (record: PhongHoc.IRecord) => {
+  const onEditClick = useCallback((record: PhongHoc.IRecord) => {
     setEditRecord(record);
     setVisibleForm(true);
-  };
+  }, [setEditRecord, setVisibleForm]);
 
   const checkCanDelete = (soChoNgoi: number) => {
     return soChoNgoi < 30;
