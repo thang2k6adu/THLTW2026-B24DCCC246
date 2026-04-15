@@ -170,7 +170,7 @@ const PhongHoc = () => {
         </div>
 
         <Table
-          dataSource={danhSachPhongHoc}
+          dataSource={danhSachPhongHoc || []}
           columns={columns}
           rowKey="_id"
           loading={loading}
