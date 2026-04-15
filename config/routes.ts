@@ -42,6 +42,12 @@
 		icon: 'OrderedListOutlined',
 		component: './TodoList',
 	},
+	{
+		path: '/phong-hoc',
+		name: 'Phòng học',
+		icon: 'BankOutlined',
+		component: './PhongHoc',
+	},
 
 	// DANH MUC HE THONG
 	// {
