@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useModel, useIntl } from 'umi';
 import { Card, Table, Button, Space, Tag, Input, Select, Popconfirm, message } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons';
@@ -34,7 +34,7 @@ const PhongHoc = () => {
     return soChoNgoi < 30;
   };
 
-  const columns = [
+  const columns = useMemo(() => [
     {
       title: 'Mã phòng',
       dataIndex: 'maPhong',
@@ -158,7 +158,7 @@ const PhongHoc = () => {
         );
       },
     },
-  ];
+  ], [danhSachCanBo, handleDelete, onEditClick]);
 
   return (
     <>
