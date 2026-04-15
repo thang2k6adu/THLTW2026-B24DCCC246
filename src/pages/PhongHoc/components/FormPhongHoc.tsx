@@ -14,6 +14,7 @@ const FormPhongHoc = () => {
     handleAdd,
     handleEdit,
     danhSachCanBo,
+    loading,
   } = useModel('phongHoc');
 
   const isEdit = !!editRecord;
@@ -65,6 +66,7 @@ const FormPhongHoc = () => {
       onCancel={onCancel}
       destroyOnClose
       maskClosable={false}
+      confirmLoading={loading}
     >
       <Form
         form={form}
