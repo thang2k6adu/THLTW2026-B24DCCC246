@@ -174,7 +174,8 @@ const PhongHoc = () => {
           columns={columns}
           rowKey="_id"
           loading={loading}
-          pagination={{ pageSize: 10 }}
+          pagination={{ pageSize: 10, showSizeChanger: true }}
+          scroll={{ x: 1000 }}
         />
       </Card>
 
