@@ -61,7 +61,7 @@ const FormPhongHoc = () => {
   return (
     <Modal
       title={isEdit ? 'Chỉnh sửa phòng học' : 'Thêm mới phòng học'}
-      open={visibleForm}
+      visible={visibleForm}
       onOk={onOk}
       onCancel={onCancel}
       destroyOnClose
