@@ -44,7 +44,7 @@
 	},
 	{
 		path: '/phong-hoc',
-		name: 'Phòng học',
+		name: 'Quản lý phòng học',
 		icon: 'BankOutlined',
 		component: './PhongHoc',
 	},
