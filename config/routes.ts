@@ -42,6 +42,42 @@
 		icon: 'OrderedListOutlined',
 		component: './TodoList',
 	},
+	{
+		path: '/blog',
+		name: 'Blog',
+		icon: 'ReadOutlined',
+		routes: [
+			{
+				path: '/blog',
+				exact: true,
+				component: './Blog',
+			},
+			{
+				path: '/blog/about',
+				name: 'About',
+				exact: true,
+				component: './Blog/About',
+			},
+			{
+				path: '/blog/admin/posts',
+				name: 'ManagePosts',
+				exact: true,
+				component: './Blog/AdminPosts',
+			},
+			{
+				path: '/blog/admin/tags',
+				name: 'ManageTags',
+				exact: true,
+				component: './Blog/AdminTags',
+			},
+			{
+				path: '/blog/:slug',
+				hideInMenu: true,
+				exact: true,
+				component: './Blog/Detail',
+			},
+		],
+	},
 
 	// DANH MUC HE THONG
 	// {
