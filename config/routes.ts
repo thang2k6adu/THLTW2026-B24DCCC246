@@ -46,37 +46,35 @@
 		path: '/blog',
 		name: 'Blog',
 		icon: 'ReadOutlined',
-		routes: [
-			{
-				path: '/blog',
-				exact: true,
-				component: './Blog',
-			},
-			{
-				path: '/blog/about',
-				name: 'About',
-				exact: true,
-				component: './Blog/About',
-			},
-			{
-				path: '/blog/admin/posts',
-				name: 'ManagePosts',
-				exact: true,
-				component: './Blog/AdminPosts',
-			},
-			{
-				path: '/blog/admin/tags',
-				name: 'ManageTags',
-				exact: true,
-				component: './Blog/AdminTags',
-			},
-			{
-				path: '/blog/:slug',
-				hideInMenu: true,
-				exact: true,
-				component: './Blog/Detail',
-			},
-		],
+		exact: true,
+		component: './Blog',
+	},
+	{
+		path: '/blog/about',
+		name: 'Blog.About',
+		exact: true,
+		component: './Blog/About',
+		icon: 'UserOutlined',
+	},
+	{
+		path: '/blog/admin/posts',
+		name: 'Blog.ManagePosts',
+		exact: true,
+		component: './Blog/AdminPosts',
+		icon: 'FileTextOutlined',
+	},
+	{
+		path: '/blog/admin/tags',
+		name: 'Blog.ManageTags',
+		exact: true,
+		component: './Blog/AdminTags',
+		icon: 'TagsOutlined',
+	},
+	{
+		path: '/blog/:slug',
+		hideInMenu: true,
+		exact: true,
+		component: './Blog/Detail',
 	},
 
 	// DANH MUC HE THONG
@@ -117,6 +115,7 @@
 	},
 	{
 		path: '/',
+		redirect: '/blog',
 	},
 	{
 		path: '/403',

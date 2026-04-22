@@ -1,6 +1,6 @@
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { Button, Card, Col, Empty, Row, Tag, Typography } from 'antd';
-import { marked } from 'marked';
+import { parse as parseMarkdown } from 'marked';
 import moment from 'moment';
 import { useEffect, useMemo, useRef } from 'react';
 import { history, useModel } from 'umi';
@@ -41,7 +41,7 @@ const BlogDetailPage = (props: DetailProps) => {
 
 	const htmlContent = useMemo(() => {
 		if (!post) return '';
-		return marked.parse(post.content, { breaks: true, gfm: true }) as string;
+		return parseMarkdown(post.content, { breaks: true, gfm: true }) as string;
 	}, [post]);
 
 	const getTagName = (tagId: string) => tags.find((tag) => tag.id === tagId)?.name || tagId;
