@@ -1,4 +1,4 @@
-﻿export default [
+export default [
 	{
 		path: '/user',
 		layout: false,
@@ -41,6 +41,28 @@
 		name: 'TodoList',
 		icon: 'OrderedListOutlined',
 		component: './TodoList',
+	},
+	{
+		name: 'Task Manager',
+		path: '/task-manager',
+		icon: 'project',
+		routes: [
+			{
+				name: 'Dashboard',
+				path: 'dashboard',
+				component: './TaskManager/Dashboard',
+			},
+			{
+				name: 'Kanban Board',
+				path: 'board',
+				component: './TaskManager/Board',
+			},
+			{
+				name: 'Task List',
+				path: 'list',
+				component: './TaskManager/List',
+			},
+		],
 	},
 
 	// DANH MUC HE THONG
