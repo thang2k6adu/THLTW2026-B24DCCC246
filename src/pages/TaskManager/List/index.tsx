@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useModel } from 'umi';
-import { Table, Button, Tag, Space, Popconfirm } from 'antd';
-import { EditOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import { Table, Button, Tag, Space, Popconfirm, Input, Select } from 'antd';
+import { EditOutlined, DeleteOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import TaskFormModal from '@/components/TaskFormModal';
 import { ITask } from '@/utils/kanbanStorage';
+
+const { Search } = Input;
+const { Option } = Select;
 
 const STATUS_MAP: Record<string, { text: string; color: string }> = {
   TODO: { text: 'Cần làm', color: '#1890ff' },
@@ -22,6 +25,8 @@ const TaskList = () => {
   const { tasks, addTask, updateTask, deleteTask } = useModel('kanban');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingTask, setEditingTask] = useState<ITask | undefined>();
+  const [searchText, setSearchText] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
 
   const handleAddClick = () => {
     setEditingTask(undefined);
@@ -41,6 +46,22 @@ const TaskList = () => {
     }
     setIsModalVisible(false);
   };
+
+  const filteredTasks = useMemo(() => {
+    let result = tasks;
+
+    if (searchText) {
+      result = result.filter((task) =>
+        task.title.toLowerCase().includes(searchText.toLowerCase())
+      );
+    }
+
+    if (statusFilter) {
+      result = result.filter((task) => task.status === statusFilter);
+    }
+
+    return result;
+  }, [tasks, searchText, statusFilter]);
 
   const columns = [
     {
@@ -69,6 +90,11 @@ const TaskList = () => {
       title: 'Hạn chót',
       dataIndex: 'deadline',
       key: 'deadline',
+      sorter: (a: ITask, b: ITask) => {
+        if (!a.deadline) return 1;
+        if (!b.deadline) return -1;
+        return moment(a.deadline).valueOf() - moment(b.deadline).valueOf();
+      },
       render: (deadline: string) => (deadline ? moment(deadline).format('DD/MM/YYYY HH:mm') : '-'),
     },
     {
@@ -113,9 +139,30 @@ const TaskList = () => {
         </Button>
       </div>
 
+      <div style={{ marginBottom: 16, display: 'flex', gap: 16 }}>
+        <Search
+          placeholder="Tìm kiếm công việc theo tên..."
+          allowClear
+          onSearch={(value) => setSearchText(value)}
+          onChange={(e) => setSearchText(e.target.value)}
+          style={{ width: 300 }}
+          prefix={<SearchOutlined />}
+        />
+        <Select
+          placeholder="Lọc theo trạng thái"
+          style={{ width: 200 }}
+          allowClear
+          onChange={(value) => setStatusFilter(value)}
+        >
+          <Option value="TODO">Cần làm</Option>
+          <Option value="IN_PROGRESS">Đang làm</Option>
+          <Option value="DONE">Hoàn thành</Option>
+        </Select>
+      </div>
+
       <Table
         columns={columns}
-        dataSource={tasks}
+        dataSource={filteredTasks}
         rowKey="id"
         pagination={{ pageSize: 10 }}
       />
